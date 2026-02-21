@@ -1,4 +1,3 @@
-import { useState } from "react";
 import {
   View,
   Text,
@@ -7,19 +6,44 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
-import { ArrowLeft, FileEdit, Users } from "lucide-react-native";
+import {
+  ArrowLeft,
+  Users,
+  CalendarDays,
+  Newspaper,
+  FileEdit,
+  FolderOpen,
+  MessageSquare,
+  BarChart3,
+  DollarSign,
+  Mail,
+  ChevronRight,
+} from "lucide-react-native";
 import { Colors } from "../../constants/Colors";
 
-type Tab = "profile-requests" | "groups";
+interface AdminLink {
+  label: string;
+  description: string;
+  route: string;
+  icon: React.ComponentType<any>;
+  color: string;
+}
+
+const ADMIN_LINKS: AdminLink[] = [
+  { label: "Members", description: "Create, edit, and manage members", route: "/(admin)/members", icon: Users, color: "#6366f1" },
+  { label: "Events", description: "Create and manage events", route: "/(admin)/events", icon: CalendarDays, color: "#0ea5e9" },
+  { label: "News", description: "Manage news articles and content", route: "/(admin)/news", icon: Newspaper, color: "#f59e0b" },
+  { label: "Profile Requests", description: "Review member profile update requests", route: "/(admin)/profile-requests", icon: FileEdit, color: "#8b5cf6" },
+  { label: "Groups", description: "Create and manage member groups", route: "/(admin)/groups", icon: FolderOpen, color: "#10b981" },
+  { label: "Updates", description: "Manage app updates and announcements", route: "/(admin)/updates", icon: MessageSquare, color: "#ec4899" },
+  { label: "Forms", description: "View member submissions and requests", route: "/(admin)/forms", icon: MessageSquare, color: "#14b8a6" },
+  { label: "Commitments", description: "Manage annual commitment settings", route: "/(admin)/commitments", icon: DollarSign, color: "#f97316" },
+  { label: "Statistics", description: "Attendance verification & analytics", route: "/(admin)/statistics", icon: BarChart3, color: "#06b6d4" },
+  { label: "Emails", description: "Create and send newsletters", route: "/(admin)/emails", icon: Mail, color: "#a855f7" },
+];
 
 export default function AdminPanelScreen() {
   const router = useRouter();
-  const [activeTab, setActiveTab] = useState<Tab>("profile-requests");
-
-  const tabs: { key: Tab; label: string }[] = [
-    { key: "profile-requests", label: "Profiles" },
-    { key: "groups", label: "Groups" },
-  ];
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: Colors.background }} edges={["top"]}>
@@ -41,132 +65,53 @@ export default function AdminPanelScreen() {
               Admin Panel
             </Text>
             <Text style={{ fontSize: 13, color: Colors.mutedForeground, marginTop: 2 }}>
-              Manage members and content
+              Manage members, content, and settings
             </Text>
           </View>
         </View>
 
-        {/* Tab Bar */}
-        <View
-          style={{
-            flexDirection: "row",
-            backgroundColor: Colors.muted,
-            borderRadius: 10,
-            padding: 3,
-            marginBottom: 16,
-          }}
-        >
-          {tabs.map((tab) => (
+        {/* Navigation Grid */}
+        <View style={{ gap: 10 }}>
+          {ADMIN_LINKS.map((link) => (
             <Pressable
-              key={tab.key}
-              onPress={() => setActiveTab(tab.key)}
-              style={{
-                flex: 1,
-                paddingVertical: 8,
-                borderRadius: 8,
+              key={link.route}
+              onPress={() => router.push(link.route as any)}
+              style={({ pressed }) => ({
+                flexDirection: "row",
                 alignItems: "center",
-                backgroundColor: activeTab === tab.key ? "white" : "transparent",
-              }}
+                backgroundColor: "white",
+                borderRadius: 16,
+                padding: 16,
+                borderWidth: 1,
+                borderColor: Colors.border,
+                opacity: pressed ? 0.85 : 1,
+              })}
             >
-              <Text
+              <View
                 style={{
-                  fontSize: 12,
-                  fontWeight: activeTab === tab.key ? "600" : "400",
-                  color: activeTab === tab.key ? Colors.foreground : Colors.mutedForeground,
+                  width: 42,
+                  height: 42,
+                  borderRadius: 12,
+                  backgroundColor: link.color + "1A",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  marginRight: 14,
                 }}
               >
-                {tab.label}
-              </Text>
+                <link.icon size={20} color={link.color} />
+              </View>
+              <View style={{ flex: 1 }}>
+                <Text style={{ fontSize: 15, fontWeight: "600", color: Colors.foreground }}>
+                  {link.label}
+                </Text>
+                <Text style={{ fontSize: 12, color: Colors.mutedForeground, marginTop: 2 }}>
+                  {link.description}
+                </Text>
+              </View>
+              <ChevronRight size={18} color={Colors.mutedForeground} />
             </Pressable>
           ))}
         </View>
-
-        {/* Tab Content */}
-        {activeTab === "profile-requests" && (
-          <View
-            style={{
-              backgroundColor: "white",
-              borderRadius: 16,
-              padding: 24,
-              borderWidth: 1,
-              borderColor: Colors.border,
-              alignItems: "center",
-            }}
-          >
-            <FileEdit size={40} color={Colors.mutedForeground} style={{ marginBottom: 12 }} />
-            <Text style={{ fontSize: 16, fontWeight: "600", color: Colors.foreground, marginBottom: 8 }}>
-              Profile Update Requests
-            </Text>
-            <Text
-              style={{
-                fontSize: 13,
-                color: Colors.mutedForeground,
-                textAlign: "center",
-                marginBottom: 16,
-                lineHeight: 20,
-              }}
-            >
-              Review and approve member profile change requests
-            </Text>
-            <Pressable
-              onPress={() => router.push("/(admin)/profile-requests" as any)}
-              style={({ pressed }) => ({
-                backgroundColor: Colors.primary,
-                borderRadius: 12,
-                paddingVertical: 12,
-                paddingHorizontal: 24,
-                opacity: pressed ? 0.85 : 1,
-              })}
-            >
-              <Text style={{ color: "white", fontWeight: "600", fontSize: 14 }}>
-                View Profile Requests
-              </Text>
-            </Pressable>
-          </View>
-        )}
-
-        {activeTab === "groups" && (
-          <View
-            style={{
-              backgroundColor: "white",
-              borderRadius: 16,
-              padding: 24,
-              borderWidth: 1,
-              borderColor: Colors.border,
-              alignItems: "center",
-            }}
-          >
-            <Users size={40} color={Colors.mutedForeground} style={{ marginBottom: 12 }} />
-            <Text style={{ fontSize: 16, fontWeight: "600", color: Colors.foreground, marginBottom: 8 }}>
-              Admin Groups
-            </Text>
-            <Text
-              style={{
-                fontSize: 13,
-                color: Colors.mutedForeground,
-                textAlign: "center",
-                marginBottom: 16,
-                lineHeight: 20,
-              }}
-            >
-              Create and manage member groups for event restrictions
-            </Text>
-            <Pressable
-              onPress={() => {/* TODO: groups screen */}}
-              style={({ pressed }) => ({
-                backgroundColor: Colors.primary,
-                borderRadius: 12,
-                paddingVertical: 12,
-                paddingHorizontal: 24,
-                opacity: pressed ? 0.85 : 1,
-              })}
-            >
-              <Text style={{ color: "white", fontWeight: "600", fontSize: 14 }}>
-                Manage Groups
-              </Text>
-            </Pressable>
-          </View>
-        )}
       </ScrollView>
     </SafeAreaView>
   );
