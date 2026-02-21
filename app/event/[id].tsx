@@ -12,6 +12,7 @@ import {
 import { Image } from "expo-image";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useLocalSearchParams, useRouter } from "expo-router";
+import { LinearGradient } from "expo-linear-gradient";
 import { ArrowLeft, Check } from "lucide-react-native";
 import { supabase } from "../../lib/supabase";
 import { Colors } from "../../constants/Colors";
@@ -86,7 +87,7 @@ export default function EventDetailScreen() {
       if (error) throw error;
       setEvent(data);
     } catch {
-      router.back();
+      router.replace("/(tabs)/events" as any);
     }
   }, [id]);
 
@@ -406,8 +407,20 @@ export default function EventDetailScreen() {
               style={{ width: "100%", aspectRatio: 16 / 9 }}
               contentFit="cover"
             />
+            {/* Gradient overlay for smooth fade transition */}
+            <LinearGradient
+              colors={['transparent', 'rgba(249,250,251,0.1)', 'rgba(249,250,251,0.3)', 'rgba(249,250,251,0.6)', '#f9fafb']}
+              locations={[0, 0.25, 0.5, 0.75, 1]}
+              style={{
+                position: 'absolute',
+                bottom: 0,
+                left: 0,
+                right: 0,
+                height: 160,
+              }}
+            />
             <Pressable
-              onPress={() => router.back()}
+              onPress={() => router.replace("/(tabs)/events" as any)}
               style={({ pressed }) => ({
                 position: "absolute",
                 top: 16,
@@ -429,7 +442,7 @@ export default function EventDetailScreen() {
         ) : (
           <View style={{ padding: 16, paddingBottom: 0 }}>
             <Pressable
-              onPress={() => router.back()}
+              onPress={() => router.replace("/(tabs)/events" as any)}
               style={({ pressed }) => ({
                 flexDirection: "row",
                 alignItems: "center",

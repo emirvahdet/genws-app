@@ -192,7 +192,7 @@ export default function AdminProfileRequestsScreen() {
       <ScrollView style={{ flex: 1 }} contentContainerStyle={{ padding: 16, paddingBottom: 48 }} showsVerticalScrollIndicator={false}>
         {/* Header */}
         <Pressable
-          onPress={() => router.back()}
+          onPress={() => router.replace("/(tabs)/profile" as any)}
           style={({ pressed }) => ({ flexDirection: "row", alignItems: "center", gap: 8, marginBottom: 16, opacity: pressed ? 0.6 : 1 })}
         >
           <ArrowLeft size={18} color={Colors.foreground} />

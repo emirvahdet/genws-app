@@ -30,7 +30,7 @@ export default function GuidebookScreen() {
         {/* Header */}
         <View style={{ flexDirection: "row", alignItems: "center", gap: 12, marginBottom: 24 }}>
           <Pressable
-            onPress={() => router.back()}
+            onPress={() => router.replace("/(tabs)/profile" as any)}
             style={({ pressed }) => ({ opacity: pressed ? 0.6 : 1, padding: 4 })}
           >
             <ArrowLeft size={22} color={Colors.foreground} />

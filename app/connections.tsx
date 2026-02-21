@@ -181,7 +181,7 @@ export default function ConnectionsScreen() {
         }}
       >
         <Pressable
-          onPress={() => router.back()}
+          onPress={() => router.replace("/(tabs)/profile" as any)}
           style={({ pressed }) => ({ padding: 4, opacity: pressed ? 0.6 : 1 })}
         >
           <ArrowLeft size={22} color={Colors.foreground} />

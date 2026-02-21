@@ -103,7 +103,7 @@ export default function AdminUpdatesScreen() {
         {/* Header */}
         <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", marginBottom: 20 }}>
           <View style={{ flexDirection: "row", alignItems: "center", gap: 12 }}>
-            <Pressable onPress={() => router.back()} style={({ pressed }) => ({ opacity: pressed ? 0.6 : 1, padding: 4 })}>
+            <Pressable onPress={() => router.replace("/(tabs)/profile" as any)} style={({ pressed }) => ({ opacity: pressed ? 0.6 : 1, padding: 4 })}>
               <ArrowLeft size={22} color={Colors.foreground} />
             </Pressable>
             <Text style={{ fontSize: 22, fontWeight: "700", color: Colors.foreground }}>Manage Updates</Text>

@@ -51,7 +51,7 @@ export default function NewsDetailScreen() {
       setNewsItem(data);
     } catch (e) {
       __DEV__ && console.log("Error fetching news item:", e);
-      router.back();
+      router.replace("/(tabs)/news" as any);
     } finally {
       setLoading(false);
     }

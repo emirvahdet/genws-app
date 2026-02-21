@@ -448,7 +448,7 @@ export default function AdminCommitmentsScreen() {
       <ScrollView style={{ flex: 1 }} contentContainerStyle={{ padding: 16, paddingBottom: 48 }} showsVerticalScrollIndicator={false}>
         {/* Header */}
         <View style={{ flexDirection: "row", alignItems: "center", gap: 12, marginBottom: 20 }}>
-          <Pressable onPress={() => router.back()} style={({ pressed }) => ({ opacity: pressed ? 0.6 : 1, padding: 4 })}><ArrowLeft size={22} color={Colors.foreground} /></Pressable>
+          <Pressable onPress={() => router.replace("/(tabs)/profile" as any)} style={({ pressed }) => ({ opacity: pressed ? 0.6 : 1, padding: 4 })}><ArrowLeft size={22} color={Colors.foreground} /></Pressable>
           <View>
             <Text style={{ fontSize: 22, fontWeight: "700", color: Colors.foreground }}>Commitments</Text>
             <Text style={{ fontSize: 13, color: Colors.mutedForeground, marginTop: 2 }}>Manage annual commitment settings</Text>
