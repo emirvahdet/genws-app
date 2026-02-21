@@ -114,8 +114,7 @@ export default function EventDetailScreen() {
   const [registration, setRegistration] = useState<any>(null);
   const [hasVerifiedAttendance, setHasVerifiedAttendance] = useState(false);
   const [registering, setRegistering] = useState(false);
-  const [showWhatsAppMessage, setShowWhatsAppMessage] = useState(false);
-
+  
   // +1 guest state
   const [plusOneGuest, setPlusOneGuest] = useState<{ name: string; email: string } | null>(null);
   const [plusOneName, setPlusOneName] = useState("");
@@ -123,9 +122,7 @@ export default function EventDetailScreen() {
   const [showPlusOneForm, setShowPlusOneForm] = useState(false);
   const [savingPlusOne, setSavingPlusOne] = useState(false);
 
-  // Cancel confirm modal
-  const [showCancelConfirm, setShowCancelConfirm] = useState(false);
-
+  
   // ─── Fetchers ─────────────────────────────────────────────────────────────
   const fetchEvent = useCallback(async () => {
     try {
@@ -280,7 +277,11 @@ export default function EventDetailScreen() {
       setIsWaitingList(shouldBeWaitlist);
       await fetchRegistrationCount();
       if (event.status.includes("Cost Bearing Event") && !event.price_charged_via_app) {
-        setShowWhatsAppMessage(true);
+        Alert.alert(
+          "Thanks for registering!",
+          "Please complete your payment via WhatsApp or bank transfer. Our team will be in touch shortly to confirm your spot.",
+          [{ text: "OK", style: "default" }]
+        );
         return;
       }
       if (!shouldBeWaitlist)
@@ -321,8 +322,6 @@ export default function EventDetailScreen() {
       await fetchRegistration();
     } catch (e: any) {
       Alert.alert("Error", e.message || "Failed to cancel");
-    } finally {
-      setShowCancelConfirm(false);
     }
   };
 
@@ -602,25 +601,7 @@ export default function EventDetailScreen() {
             </View>
           )}
 
-          {/* Cost-bearing WhatsApp message */}
-          {showWhatsAppMessage && (
-            <View
-              style={{
-                backgroundColor: Colors.primary + "1A",
-                borderRadius: 12,
-                padding: 16,
-                marginBottom: 12,
-                borderWidth: 1,
-                borderColor: Colors.primary + "4D",
-              }}
-            >
-              <Text style={{ fontSize: 14, color: Colors.primary, lineHeight: 20 }}>
-                Thanks for registering! Please complete your payment via WhatsApp or bank transfer. Our team
-                will be in touch shortly to confirm your spot.
-              </Text>
-            </View>
-          )}
-
+          
           <EventRegButton
             event={event}
             isRegistered={isRegistered}
@@ -634,7 +615,24 @@ export default function EventDetailScreen() {
             showPlusOneForm={showPlusOneForm}
             savingPlusOne={savingPlusOne}
             onRegister={handleRegister}
-            onCancelPress={() => setShowCancelConfirm(true)}
+            onCancelPress={() => {
+              Alert.alert(
+                isWaitingList ? "Leave Waitlist?" : "Cancel Registration?",
+                isWaitingList
+                  ? "Are you sure you want to leave the waitlist for this event?"
+                  : event?.status.includes("Cost Bearing Event") && event?.price_charged_via_app
+                  ? "Your cancellation will be submitted for admin approval and a refund will be processed."
+                  : "Are you sure you want to cancel your registration for this event?",
+                [
+                  { text: "Keep", style: "cancel", onPress: () => {} },
+                  { 
+                    text: isWaitingList ? "Leave Waitlist" : "Cancel", 
+                    style: "destructive",
+                    onPress: handleDeregister 
+                  }
+                ]
+              );
+            }}
             onSavePlusOne={handleSavePlusOne}
             onRemovePlusOne={handleRemovePlusOne}
             onShowPlusOneForm={setShowPlusOneForm}
@@ -649,69 +647,6 @@ export default function EventDetailScreen() {
         )}
       </ScrollView>
 
-      {/* Cancel confirmation modal */}
-      <Modal
-        visible={showCancelConfirm}
-        transparent
-        animationType="fade"
-        onRequestClose={() => setShowCancelConfirm(false)}
-      >
-        <View
-          style={{
-            flex: 1,
-            backgroundColor: "rgba(0,0,0,0.5)",
-            alignItems: "center",
-            justifyContent: "center",
-            padding: 24,
-          }}
-        >
-          <View style={{ backgroundColor: "white", borderRadius: 16, padding: 24, width: "100%" }}>
-            <Text style={{ fontSize: 18, fontWeight: "700", color: Colors.foreground, marginBottom: 8 }}>
-              {isWaitingList ? "Leave Waitlist?" : "Cancel Registration?"}
-            </Text>
-            <Text
-              style={{ fontSize: 14, color: Colors.mutedForeground, lineHeight: 20, marginBottom: 24 }}
-            >
-              {isWaitingList
-                ? "Are you sure you want to leave the waitlist for this event?"
-                : event?.status.includes("Cost Bearing Event") && event?.price_charged_via_app
-                ? "Your cancellation will be submitted for admin approval and a refund will be processed."
-                : "Are you sure you want to cancel your registration for this event?"}
-            </Text>
-            <View style={{ flexDirection: "row", gap: 12 }}>
-              <Pressable
-                onPress={() => setShowCancelConfirm(false)}
-                style={({ pressed }) => ({
-                  flex: 1,
-                  borderWidth: 1,
-                  borderColor: Colors.border,
-                  borderRadius: 12,
-                  paddingVertical: 12,
-                  alignItems: "center",
-                  opacity: pressed ? 0.7 : 1,
-                })}
-              >
-                <Text style={{ fontWeight: "600", color: Colors.foreground }}>Keep</Text>
-              </Pressable>
-              <Pressable
-                onPress={handleDeregister}
-                style={({ pressed }) => ({
-                  flex: 1,
-                  backgroundColor: Colors.destructive,
-                  borderRadius: 12,
-                  paddingVertical: 12,
-                  alignItems: "center",
-                  opacity: pressed ? 0.8 : 1,
-                })}
-              >
-                <Text style={{ fontWeight: "600", color: "white" }}>
-                  {isWaitingList ? "Leave Waitlist" : "Cancel"}
-                </Text>
-              </Pressable>
-            </View>
-          </View>
-        </View>
-      </Modal>
-    </MobileLayout>
+          </MobileLayout>
   );
 }

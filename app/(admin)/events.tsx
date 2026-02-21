@@ -26,6 +26,20 @@ import { supabase } from "../../lib/supabase";
 import { Colors } from "../../constants/Colors";
 import { EventAttendees } from "../../components/admin/EventAttendees";
 import { RichTextEditor } from "../../components/admin/RichTextEditor";
+import { DateTimePickerComponent } from "../../components/admin/DateTimePicker";
+
+// EditField component - moved outside to prevent re-renders
+const EF = ({ label, value, onChangeText, placeholder, multiline, keyboardType, hint }: any) => (
+  <View style={{ marginBottom: 10 }}>
+    <Text style={{ fontSize: 11, fontWeight: "600", color: Colors.mutedForeground, marginBottom: 3 }}>{label}</Text>
+    <TextInput
+      style={{ backgroundColor: Colors.input, borderWidth: 1, borderColor: Colors.border, borderRadius: 10, padding: 9, fontSize: 13, color: Colors.foreground, ...(multiline ? { minHeight: 70, textAlignVertical: "top" as const } : {}) }}
+      value={value} onChangeText={onChangeText} placeholder={placeholder} placeholderTextColor={Colors.mutedForeground}
+      multiline={multiline} keyboardType={keyboardType}
+    />
+    {hint && <Text style={{ fontSize: 10, color: Colors.mutedForeground, marginTop: 2 }}>{hint}</Text>}
+  </View>
+);
 
 const EVENT_STATUS_OPTIONS = [
   "Open to Registration",
@@ -316,19 +330,7 @@ export default function AdminEventsScreen() {
     return 0;
   });
 
-  const EF = ({ label, value, onChangeText, placeholder, multiline, keyboardType, hint }: any) => (
-    <View style={{ marginBottom: 10 }}>
-      <Text style={{ fontSize: 11, fontWeight: "600", color: Colors.mutedForeground, marginBottom: 3 }}>{label}</Text>
-      <TextInput
-        style={{ backgroundColor: Colors.input, borderWidth: 1, borderColor: Colors.border, borderRadius: 10, padding: 9, fontSize: 13, color: Colors.foreground, ...(multiline ? { minHeight: 70, textAlignVertical: "top" as const } : {}) }}
-        value={value} onChangeText={onChangeText} placeholder={placeholder} placeholderTextColor={Colors.mutedForeground}
-        multiline={multiline} keyboardType={keyboardType}
-      />
-      {hint && <Text style={{ fontSize: 10, color: Colors.mutedForeground, marginTop: 2 }}>{hint}</Text>}
-    </View>
-  );
-
-  return (
+return (
     <SafeAreaView style={{ flex: 1, backgroundColor: Colors.background }} edges={["top"]}>
       <ScrollView style={{ flex: 1 }} contentContainerStyle={{ padding: 16, paddingBottom: 48 }} showsVerticalScrollIndicator={false}>
         {/* Header */}
@@ -436,8 +438,19 @@ export default function AdminEventsScreen() {
                 <View style={{ flex: 1 }}><EF label="Country" value={formData.country} onChangeText={(t: string) => setFormData((p) => ({ ...p, country: t }))} /></View>
               </View>
               <EF label="Coordinates" value={formData.coordinates} onChangeText={(t: string) => setFormData((p) => ({ ...p, coordinates: t }))} placeholder="41.066551, 29.018055" hint="Leave empty for approximate location" />
-              <EF label="Start Date * (YYYY-MM-DDTHH:MM)" value={formData.start_date} onChangeText={(t: string) => setFormData((p) => ({ ...p, start_date: t }))} placeholder="2025-06-15T19:00" />
-              <EF label="End Date (Optional)" value={formData.end_date} onChangeText={(t: string) => setFormData((p) => ({ ...p, end_date: t }))} placeholder="2025-06-15T23:00" />
+              <DateTimePickerComponent
+                label="Start Date"
+                value={formData.start_date}
+                onChange={(value) => setFormData((p) => ({ ...p, start_date: value }))}
+                placeholder="Select start date and time"
+                required
+              />
+              <DateTimePickerComponent
+                label="End Date (Optional)"
+                value={formData.end_date}
+                onChange={(value) => setFormData((p) => ({ ...p, end_date: value }))}
+                placeholder="Select end date and time"
+              />
               <EF label="Image URL" value={formData.image_url} onChangeText={(t: string) => setFormData((p) => ({ ...p, image_url: t }))} placeholder="https://..." keyboardType="url" />
               <EF label="Host *" value={formData.host} onChangeText={(t: string) => setFormData((p) => ({ ...p, host: t }))} />
               <EF label="Dress Code" value={formData.dress_code} onChangeText={(t: string) => setFormData((p) => ({ ...p, dress_code: t }))} placeholder="Smart Casual, Formal..." />

@@ -12,7 +12,7 @@ import {
 } from "react-native";
 import { useRouter } from "expo-router";
 import { isSameDay } from "date-fns";
-import { Users, QrCode, Send, ChevronLeft, X } from "lucide-react-native";
+import { Users, QrCode, Send, ChevronLeft, ChevronRight, X } from "lucide-react-native";
 import { MobileLayout } from "../../components/layout/MobileLayout";
 import { AttendanceBarcodeModal } from "../../components/dashboard/AttendanceBarcodeModal";
 import NetworkingModal from "../../components/dashboard/NetworkingModal";
@@ -205,17 +205,17 @@ export default function DashboardScreen() {
                           {update.title}
                         </Text>
                         {update.type === "news" && (
-                          <View style={{ backgroundColor: Colors.accent + "1A", borderRadius: 999, paddingHorizontal: 8, paddingVertical: 2 }}>
-                            <Text style={{ fontSize: 11, color: Colors.accent }}>News</Text>
+                          <View style={{ backgroundColor: "rgba(254, 215, 170, 0.3)", borderRadius: 999, paddingHorizontal: 8, paddingVertical: 2 }}>
+                            <Text style={{ fontSize: 11, color: "#d97706", fontWeight: "500" }}>News</Text>
                           </View>
                         )}
                       </View>
-                      <Text style={{ fontSize: 14, color: Colors.primary }} numberOfLines={1}>
+                      <Text style={{ fontSize: 14, color: "#324750" }} numberOfLines={1}>
                         {stripHtml(update.content)}
                       </Text>
                       {update.external_url && (
                         <Pressable onPress={(e) => { Linking.openURL(update.external_url!); }} style={{ marginTop: 4 }}>
-                          <Text style={{ fontSize: 12, color: Colors.primary }}>Read more →</Text>
+                          <Text style={{ fontSize: 12, color: Colors.primary, fontWeight: "500" }}>Read more →</Text>
                         </Pressable>
                       )}
                     </View>
@@ -261,7 +261,7 @@ export default function DashboardScreen() {
                 {MONTH_NAMES[calendarMonth]} {calendarYear}
               </Text>
               <Pressable onPress={nextMonth} style={({ pressed }) => ({ opacity: pressed ? 0.6 : 1, padding: 8 })}>
-                <ChevronLeft size={20} color={Colors.foreground} style={{ transform: [{ rotate: "180deg" }] }} />
+                <ChevronRight size={20} color={Colors.foreground} />
               </Pressable>
             </View>
 
@@ -286,23 +286,34 @@ export default function DashboardScreen() {
                   const isSelected = isSameDay(date, selectedDate);
                   const isToday = isSameDay(date, new Date());
                   return (
-                    <Pressable
-                      key={ci}
-                      onPress={() => handleDatePress(date)}
-                      style={({ pressed }) => ({
-                        flex: 1, aspectRatio: 1, alignItems: "center", justifyContent: "center",
-                        borderRadius: 999,
-                        backgroundColor: isEvent ? Colors.primary : isSelected ? Colors.muted : "transparent",
-                        opacity: pressed ? 0.7 : 1,
-                      })}
-                    >
-                      <Text style={{ fontSize: 14, fontWeight: isToday ? "700" : "400", color: isEvent ? Colors.primaryForeground : isToday ? Colors.primary : Colors.foreground }}>
-                        {day}
-                      </Text>
-                      {isRegistered && !isEvent && (
-                        <View style={{ position: "absolute", top: 2, right: 2, width: 6, height: 6, borderRadius: 3, backgroundColor: Colors.copper, borderWidth: 1, borderColor: Colors.background }} />
+                    <View key={ci} style={{ flex: 1, aspectRatio: 1, alignItems: "center", justifyContent: "center" }}>
+                      {isEvent ? (
+                        <View style={{ width: 32, height: 32, borderRadius: 16, backgroundColor: Colors.primary, alignItems: "center", justifyContent: "center" }}>
+                          <Pressable onPress={() => handleDatePress(date)} style={({ pressed }) => ({ opacity: pressed ? 0.7 : 1 })}>
+                            <Text style={{ fontSize: 14, fontWeight: isToday ? "700" : "400", color: Colors.primaryForeground }}>
+                              {day}
+                            </Text>
+                          </Pressable>
+                        </View>
+                      ) : (
+                        <Pressable
+                          onPress={() => handleDatePress(date)}
+                          style={({ pressed }) => ({
+                            flex: 1, width: "100%", alignItems: "center", justifyContent: "center",
+                            borderRadius: 999,
+                            backgroundColor: isSelected ? Colors.muted : "transparent",
+                            opacity: pressed ? 0.7 : 1,
+                          })}
+                        >
+                          <Text style={{ fontSize: 14, fontWeight: isToday ? "700" : "400", color: isToday ? Colors.primary : Colors.foreground }}>
+                            {day}
+                          </Text>
+                          {isRegistered && !isEvent && (
+                            <View style={{ position: "absolute", top: 2, right: 2, width: 6, height: 6, borderRadius: 3, backgroundColor: Colors.copper, borderWidth: 1, borderColor: Colors.background }} />
+                          )}
+                        </Pressable>
                       )}
-                    </Pressable>
+                    </View>
                   );
                 })}
               </View>

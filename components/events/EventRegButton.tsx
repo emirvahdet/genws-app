@@ -80,13 +80,13 @@ export function EventRegButton({
       })}
     >
       {registering && !disabled ? (
-        <ActivityIndicator size="small" color={outline ? Colors.primary : "white"} />
+        <ActivityIndicator size="small" color={outline ? "#00451a" : "white"} />
       ) : (
         <Text
           style={{
             fontSize: 16,
             fontWeight: "600",
-            color: disabled ? "white" : outline ? Colors.primary : "white",
+            color: disabled ? "white" : outline ? "#00451a" : "white",
           }}
         >
           {label}
