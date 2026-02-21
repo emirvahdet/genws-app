@@ -11,9 +11,9 @@ import {
 import { Image } from "expo-image";
 import { useRouter } from "expo-router";
 import { ExternalLink } from "lucide-react-native";
-import { supabase } from "../../lib/supabase";
-import { MobileLayout } from "../../components/layout/MobileLayout";
-import { Colors } from "../../constants/Colors";
+import { supabase } from "../../../lib/supabase";
+import { MobileLayout } from "../../../components/layout/MobileLayout";
+import { Colors } from "../../../constants/Colors";
 
 interface NewsItem {
   id: string;

@@ -18,10 +18,10 @@ import {
   Newspaper, LayoutDashboard, Send, Award, BarChart3, User,
   BookOpen,
 } from "lucide-react-native";
-import { supabase } from "../../lib/supabase";
-import { useViewAs } from "../../stores/ViewAsContext";
-import { CommitmentSection } from "../../components/profile/CommitmentSection";
-import { Colors } from "../../constants/Colors";
+import { supabase } from "../../../lib/supabase";
+import { useViewAs } from "../../../stores/ViewAsContext";
+import { CommitmentSection } from "../../../components/profile/CommitmentSection";
+import { Colors } from "../../../constants/Colors";
 
 interface ProfileData {
   full_name: string;
@@ -243,13 +243,13 @@ export default function ProfileScreen() {
           <View style={{ flexDirection: "row", alignItems: "flex-start", gap: 16 }}>
             {/* Avatar */}
             <View style={{ alignItems: "center", gap: 6 }}>
-              <View style={{ width: 80, height: 80, borderRadius: 16, borderWidth: 1, borderColor: Colors.border + "4D", backgroundColor: Colors.primary + "1A", alignItems: "center", justifyContent: "center" }}>
+              <View style={{ width: 80, height: 80, borderRadius: 16, borderWidth: 1, borderColor: Colors.border + "4D", backgroundColor: Colors.muted, alignItems: "center", justifyContent: "center" }}>
                 <Text style={{ fontSize: 24, fontWeight: "600", color: Colors.primary }}>
                   {getInitials(formData.full_name)}
                 </Text>
               </View>
               {formData.generation_number != null && (
-                <View style={{ borderWidth: 1, borderColor: Colors.primary + "4D", borderRadius: 999, paddingHorizontal: 8, paddingVertical: 2, backgroundColor: Colors.primary + "0D" }}>
+                <View style={{ borderWidth: 1, borderColor: Colors.primary + "4D", borderRadius: 999, paddingHorizontal: 8, paddingVertical: 2, backgroundColor: "white" }}>
                   <Text style={{ fontSize: 11, color: Colors.primary }}>
                     {formData.generation_number}{getOrdinalSuffix(formData.generation_number)} Gen
                   </Text>
@@ -269,7 +269,7 @@ export default function ProfileScreen() {
               ) : null}
               <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 6, marginTop: 8 }}>
                 {formData.batch_number && (
-                  <View style={{ flexDirection: "row", alignItems: "center", gap: 4, borderWidth: 1, borderColor: Colors.primary + "4D", borderRadius: 999, paddingHorizontal: 8, paddingVertical: 2, backgroundColor: Colors.primary + "0D" }}>
+                  <View style={{ flexDirection: "row", alignItems: "center", gap: 4, borderWidth: 1, borderColor: Colors.primary + "4D", borderRadius: 999, paddingHorizontal: 8, paddingVertical: 2, backgroundColor: "white" }}>
                     <Lock size={10} color={Colors.primary} />
                     <Text style={{ fontSize: 11, color: Colors.primary }}>Batch: {formData.batch_number}</Text>
                   </View>
@@ -445,7 +445,7 @@ export default function ProfileScreen() {
 
           {/* App version */}
           <Text style={{ textAlign: "center", fontSize: 12, color: Colors.mutedForeground, marginTop: 4 }}>
-            GWS v1.0.1
+            GWS v2.1.12
           </Text>
         </View>
       </ScrollView>

@@ -11,7 +11,7 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
 import { ArrowLeft } from "lucide-react-native";
-import { Colors } from "../../constants/Colors";
+import { Colors } from "../../../constants/Colors";
 
 export default function EmailPreferencesScreen() {
   const router = useRouter();

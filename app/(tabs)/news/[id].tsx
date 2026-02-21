@@ -10,9 +10,9 @@ import {
 import { Image } from "expo-image";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { ArrowLeft, ExternalLink } from "lucide-react-native";
-import { supabase } from "../../lib/supabase";
-import { Colors } from "../../constants/Colors";
-import { MobileLayout } from "../../components/layout/MobileLayout";
+import { supabase } from "../../../lib/supabase";
+import { Colors } from "../../../constants/Colors";
+import { MobileLayout } from "../../../components/layout/MobileLayout";
 
 interface NewsItem {
   id: string;

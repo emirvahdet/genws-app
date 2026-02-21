@@ -13,8 +13,8 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
 import { ArrowLeft, Search, MapPin, MoreVertical, UserMinus } from "lucide-react-native";
-import { supabase } from "../lib/supabase";
-import { Colors } from "../constants/Colors";
+import { supabase } from "../../lib/supabase";
+import { Colors } from "../../constants/Colors";
 
 interface NetworkConnection {
   userId: string;

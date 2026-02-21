@@ -2,7 +2,7 @@ import { View, Text, ScrollView, Pressable } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
 import { ArrowLeft } from "lucide-react-native";
-import { Colors } from "../constants/Colors";
+import { Colors } from "../../constants/Colors";
 
 const GCard = ({ title, children }: { title?: string; children: React.ReactNode }) => (
   <View style={{ backgroundColor: "white", borderRadius: 16, padding: 20, borderWidth: 1, borderColor: Colors.border, marginBottom: 12 }}>

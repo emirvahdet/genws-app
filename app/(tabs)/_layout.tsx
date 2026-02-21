@@ -85,7 +85,7 @@ export default function TabsLayout() {
         }}
       />
       <Tabs.Screen
-        name="news"
+        name="news/index"
         options={{
           title: "News",
           tabBarIcon: ({ color, size }) => (
@@ -94,12 +94,73 @@ export default function TabsLayout() {
         }}
       />
       <Tabs.Screen
-        name="profile"
+        name="profile/index"
         options={{
           title: "Profile",
           tabBarIcon: ({ color, size }) => (
             <User size={size} color={color} />
           ),
+        }}
+      />
+      {/* Hidden detail screens - keep tab bar visible but don't show as tabs */}
+      <Tabs.Screen
+        name="event/[id]"
+        options={{
+          href: null,
+        }}
+      />
+      <Tabs.Screen
+        name="news/[id]"
+        options={{
+          href: null,
+        }}
+      />
+      <Tabs.Screen
+        name="member/[id]"
+        options={{
+          href: null,
+        }}
+      />
+      <Tabs.Screen
+        name="profile/information"
+        options={{
+          href: null,
+        }}
+      />
+      <Tabs.Screen
+        name="settings/email-preferences"
+        options={{
+          href: null,
+        }}
+      />
+      <Tabs.Screen
+        name="settings/privacy-security"
+        options={{
+          href: null,
+        }}
+      />
+      <Tabs.Screen
+        name="settings/help-support"
+        options={{
+          href: null,
+        }}
+      />
+      <Tabs.Screen
+        name="settings/terms-privacy"
+        options={{
+          href: null,
+        }}
+      />
+      <Tabs.Screen
+        name="guidebook"
+        options={{
+          href: null,
+        }}
+      />
+      <Tabs.Screen
+        name="connections"
+        options={{
+          href: null,
         }}
       />
     </Tabs>

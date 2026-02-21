@@ -2,7 +2,7 @@ import { View, Text, ScrollView, Pressable, Linking } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
 import { ArrowLeft, Mail, Phone, MapPin, Globe } from "lucide-react-native";
-import { Colors } from "../../constants/Colors";
+import { Colors } from "../../../constants/Colors";
 
 export default function HelpSupportScreen() {
   const router = useRouter();

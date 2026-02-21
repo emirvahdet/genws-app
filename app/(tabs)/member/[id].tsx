@@ -19,9 +19,9 @@ import {
   Target,
   Activity,
 } from "lucide-react-native";
-import { supabase } from "../../lib/supabase";
-import { Colors } from "../../constants/Colors";
-import { MobileLayout } from "../../components/layout/MobileLayout";
+import { supabase } from "../../../lib/supabase";
+import { Colors } from "../../../constants/Colors";
+import { MobileLayout } from "../../../components/layout/MobileLayout";
 
 interface MemberData {
   id: string;

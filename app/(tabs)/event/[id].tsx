@@ -13,10 +13,10 @@ import { Image } from "expo-image";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { LinearGradient } from "expo-linear-gradient";
 import { ArrowLeft, Check } from "lucide-react-native";
-import { supabase } from "../../lib/supabase";
-import { Colors } from "../../constants/Colors";
-import { EventRegButton } from "../../components/events/EventRegButton";
-import { MobileLayout } from "../../components/layout/MobileLayout";
+import { supabase } from "../../../lib/supabase";
+import { Colors } from "../../../constants/Colors";
+import { EventRegButton } from "../../../components/events/EventRegButton";
+import { MobileLayout } from "../../../components/layout/MobileLayout";
 
 interface Event {
   id: string;

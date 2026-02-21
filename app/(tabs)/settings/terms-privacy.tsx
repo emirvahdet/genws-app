@@ -2,7 +2,7 @@ import { View, Text, ScrollView, Pressable } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
 import { ArrowLeft, Shield, FileText } from "lucide-react-native";
-import { Colors } from "../../constants/Colors";
+import { Colors } from "../../../constants/Colors";
 
 const Section = ({ title, children }: { title: string; children: React.ReactNode }) => (
   <View style={{ marginBottom: 16 }}>
