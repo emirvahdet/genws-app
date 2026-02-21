@@ -326,7 +326,7 @@ export default function EventDetailScreen() {
   };
 
   const handleSavePlusOne = async () => {
-    if (!registration?.id || !plusOneName.trim() || !plusOneEmail.trim()) {
+    if (!plusOneName.trim() || !plusOneEmail.trim()) {
       Alert.alert("Error", "Please enter both name and email"); return;
     }
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(plusOneEmail.trim())) {
@@ -336,8 +336,22 @@ export default function EventDetailScreen() {
     try {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
+      
+      // Get user's registration for this event
+      const { data: userReg } = await (supabase.from("event_registrations") as any)
+        .select("id")
+        .eq("event_id", id)
+        .eq("user_id", user.id)
+        .eq("refund_processed", false)
+        .maybeSingle();
+      
+      if (!userReg?.id) {
+        Alert.alert("Error", "You must be registered for this event first");
+        return;
+      }
+      
       const { error } = await (supabase.from("event_plus_one_guests") as any).insert({
-        registration_id: registration.id, event_id: id, user_id: user.id,
+        registration_id: userReg.id, event_id: id, user_id: user.id,
         guest_name: plusOneName.trim(), guest_email: plusOneEmail.trim(),
       });
       if (error) throw error;
