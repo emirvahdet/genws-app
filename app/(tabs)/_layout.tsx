@@ -1,35 +1,70 @@
 import { Tabs } from "expo-router";
-import { LayoutDashboard, Calendar, Map, Newspaper, User } from "lucide-react-native";
+import { View, Text } from "react-native";
+import { MapPin, Calendar, Newspaper, User } from "lucide-react-native";
 import { Colors } from "../../constants/Colors";
+
+const INACTIVE_COLOR = "#324750";
+const ACTIVE_COLOR = Colors.primary;
+
+function GWSTabIcon({ focused }: { focused: boolean }) {
+  return (
+    <View
+      style={{
+        width: 40,
+        height: 40,
+        borderRadius: 8,
+        backgroundColor: focused ? Colors.primary : "#324750",
+        alignItems: "center",
+        justifyContent: "center",
+        marginBottom: 2,
+      }}
+    >
+      <Text
+        style={{
+          color: "white",
+          fontWeight: "700",
+          fontSize: 13,
+          letterSpacing: 0.5,
+        }}
+      >
+        GWS
+      </Text>
+    </View>
+  );
+}
 
 export default function TabsLayout() {
   return (
     <Tabs
       screenOptions={{
         headerShown: false,
-        tabBarActiveTintColor: Colors.primary,
-        tabBarInactiveTintColor: Colors.mutedForeground,
+        tabBarActiveTintColor: ACTIVE_COLOR,
+        tabBarInactiveTintColor: INACTIVE_COLOR,
         tabBarStyle: {
           backgroundColor: Colors.card,
-          borderTopColor: Colors.border,
+          borderTopColor: Colors.border + "80",
           borderTopWidth: 1,
-          paddingBottom: 4,
+          paddingBottom: 0,
           paddingTop: 4,
-          height: 60,
+          height: 64,
+          // Green bottom bar (7px) matching webapp
+          borderBottomWidth: 7,
+          borderBottomColor: Colors.primary,
         },
         tabBarLabelStyle: {
-          fontSize: 11,
+          fontSize: 10,
           fontWeight: "500",
-          marginTop: 2,
+          marginTop: 0,
+          marginBottom: 6,
         },
       }}
     >
       <Tabs.Screen
-        name="index"
+        name="maps"
         options={{
-          title: "Dashboard",
+          title: "Map",
           tabBarIcon: ({ color, size }) => (
-            <LayoutDashboard size={size} color={color} />
+            <MapPin size={size} color={color} />
           ),
         }}
       />
@@ -43,12 +78,10 @@ export default function TabsLayout() {
         }}
       />
       <Tabs.Screen
-        name="maps"
+        name="index"
         options={{
-          title: "Maps",
-          tabBarIcon: ({ color, size }) => (
-            <Map size={size} color={color} />
-          ),
+          title: "",
+          tabBarIcon: ({ focused }) => <GWSTabIcon focused={focused} />,
         }}
       />
       <Tabs.Screen
