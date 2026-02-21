@@ -1,37 +1,12 @@
+// ⚠️ CRITICAL: DO NOT MODIFY TAB BAR — exactly 5 tabs: Map, Events, GWS, News, Profile
 import { Tabs } from "expo-router";
-import { View, Text } from "react-native";
+import { Image } from "react-native";
 import { MapPin, Calendar, Newspaper, User } from "lucide-react-native";
 import { Colors } from "../../constants/Colors";
 
-const INACTIVE_COLOR = "#324750";
+const TAB_COLOR = "#324750";
 const ACTIVE_COLOR = Colors.primary;
-
-function GWSTabIcon({ focused }: { focused: boolean }) {
-  return (
-    <View
-      style={{
-        width: 40,
-        height: 40,
-        borderRadius: 8,
-        backgroundColor: focused ? Colors.primary : "#324750",
-        alignItems: "center",
-        justifyContent: "center",
-        marginBottom: 2,
-      }}
-    >
-      <Text
-        style={{
-          color: "white",
-          fontWeight: "700",
-          fontSize: 13,
-          letterSpacing: 0.5,
-        }}
-      >
-        GWS
-      </Text>
-    </View>
-  );
-}
+const GREEN_BAR = "#00451a";
 
 export default function TabsLayout() {
   return (
@@ -39,7 +14,7 @@ export default function TabsLayout() {
       screenOptions={{
         headerShown: false,
         tabBarActiveTintColor: ACTIVE_COLOR,
-        tabBarInactiveTintColor: INACTIVE_COLOR,
+        tabBarInactiveTintColor: TAB_COLOR,
         tabBarStyle: {
           backgroundColor: Colors.card,
           borderTopColor: Colors.border + "80",
@@ -47,9 +22,8 @@ export default function TabsLayout() {
           paddingBottom: 0,
           paddingTop: 4,
           height: 64,
-          // Green bottom bar (7px) matching webapp
           borderBottomWidth: 7,
-          borderBottomColor: Colors.primary,
+          borderBottomColor: GREEN_BAR,
         },
         tabBarLabelStyle: {
           fontSize: 10,
@@ -81,7 +55,13 @@ export default function TabsLayout() {
         name="index"
         options={{
           title: "",
-          tabBarIcon: ({ focused }) => <GWSTabIcon focused={focused} />,
+          tabBarIcon: () => (
+            <Image
+              source={require("../../assets/images/gws-qr-icon.png")}
+              style={{ width: 40, height: 40, borderRadius: 6 }}
+              resizeMode="cover"
+            />
+          ),
         }}
       />
       <Tabs.Screen
