@@ -8,7 +8,6 @@ import {
   Linking,
 } from "react-native";
 import { Image } from "expo-image";
-import { SafeAreaView } from "react-native-safe-area-context";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import {
   ArrowLeft,
@@ -22,6 +21,7 @@ import {
 } from "lucide-react-native";
 import { supabase } from "../../lib/supabase";
 import { Colors } from "../../constants/Colors";
+import { MobileLayout } from "../../components/layout/MobileLayout";
 
 interface MemberData {
   id: string;
@@ -103,20 +103,20 @@ export default function MemberProfileScreen() {
 
   if (loading) {
     return (
-      <SafeAreaView style={{ flex: 1, backgroundColor: Colors.background }} edges={["top"]}>
+      <MobileLayout>
         <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
           <ActivityIndicator size="large" color={Colors.primary} />
         </View>
-      </SafeAreaView>
+      </MobileLayout>
     );
   }
 
   if (!member || !isConnected) {
     return (
-      <SafeAreaView style={{ flex: 1, backgroundColor: Colors.background }} edges={["top"]}>
+      <MobileLayout>
         <View style={{ flex: 1, padding: 16 }}>
           <Pressable
-            onPress={() => router.back()}
+            onPress={() => router.replace("/(tabs)/profile" as any)}
             style={({ pressed }) => ({ flexDirection: "row", alignItems: "center", gap: 8, marginBottom: 16, opacity: pressed ? 0.6 : 1 })}
           >
             <ArrowLeft size={20} color={Colors.foreground} />
@@ -126,7 +126,7 @@ export default function MemberProfileScreen() {
             <Text style={{ color: Colors.mutedForeground }}>Member not found or you are not connected.</Text>
           </View>
         </View>
-      </SafeAreaView>
+      </MobileLayout>
     );
   }
 
@@ -147,11 +147,11 @@ export default function MemberProfileScreen() {
   );
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: Colors.background }} edges={["top"]}>
+    <MobileLayout>
       {/* Header */}
       <View style={{ flexDirection: "row", alignItems: "center", gap: 12, padding: 16, borderBottomWidth: 1, borderBottomColor: Colors.border }}>
         <Pressable
-          onPress={() => router.back()}
+          onPress={() => router.replace("/(tabs)/profile" as any)}
           style={({ pressed }) => ({ padding: 4, opacity: pressed ? 0.6 : 1 })}
         >
           <ArrowLeft size={22} color={Colors.foreground} />
@@ -258,6 +258,6 @@ export default function MemberProfileScreen() {
           <Section title="Preferred Activities" icon={Activity} tags={member.preferred_activities} />
         )}
       </ScrollView>
-    </SafeAreaView>
+    </MobileLayout>
   );
 }

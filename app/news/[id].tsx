@@ -8,11 +8,11 @@ import {
   Linking,
 } from "react-native";
 import { Image } from "expo-image";
-import { SafeAreaView } from "react-native-safe-area-context";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { ArrowLeft, ExternalLink } from "lucide-react-native";
 import { supabase } from "../../lib/supabase";
 import { Colors } from "../../constants/Colors";
+import { MobileLayout } from "../../components/layout/MobileLayout";
 
 interface NewsItem {
   id: string;
@@ -63,34 +63,34 @@ export default function NewsDetailScreen() {
 
   if (loading) {
     return (
-      <SafeAreaView style={{ flex: 1, backgroundColor: Colors.background }} edges={["top"]}>
+      <MobileLayout>
         <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
           <ActivityIndicator size="large" color={Colors.primary} />
         </View>
-      </SafeAreaView>
+      </MobileLayout>
     );
   }
 
   if (!newsItem) {
     return (
-      <SafeAreaView style={{ flex: 1, backgroundColor: Colors.background }} edges={["top"]}>
+      <MobileLayout>
         <View style={{ flex: 1, padding: 16 }}>
-          <Pressable onPress={() => router.back()} style={{ flexDirection: "row", alignItems: "center", gap: 8, marginBottom: 16 }}>
+          <Pressable onPress={() => router.replace("/(tabs)/news" as any)} style={{ flexDirection: "row", alignItems: "center", gap: 8, marginBottom: 16 }}>
             <ArrowLeft size={20} color={Colors.foreground} />
             <Text style={{ color: Colors.foreground }}>Back</Text>
           </Pressable>
           <Text style={{ color: Colors.mutedForeground }}>News item not found</Text>
         </View>
-      </SafeAreaView>
+      </MobileLayout>
     );
   }
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: Colors.background }} edges={["top"]}>
+    <MobileLayout>
       {/* Back nav bar */}
       <View style={{ borderBottomWidth: 1, borderBottomColor: Colors.border, paddingHorizontal: 16, paddingVertical: 12 }}>
         <Pressable
-          onPress={() => router.back()}
+          onPress={() => router.replace("/(tabs)/news" as any)}
           style={({ pressed }) => ({ flexDirection: "row", alignItems: "center", gap: 8, opacity: pressed ? 0.6 : 1, alignSelf: "flex-start" })}
         >
           <ArrowLeft size={18} color={Colors.foreground} />
@@ -165,6 +165,6 @@ export default function NewsDetailScreen() {
           </View>
         )}
       </ScrollView>
-    </SafeAreaView>
+    </MobileLayout>
   );
 }

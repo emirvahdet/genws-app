@@ -66,7 +66,7 @@ export default function NewsScreen() {
 
   if (loading) {
     return (
-      <MobileLayout hideHeader>
+      <MobileLayout>
         <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
           <ActivityIndicator size="large" color={Colors.primary} />
         </View>
@@ -75,7 +75,7 @@ export default function NewsScreen() {
   }
 
   return (
-    <MobileLayout hideHeader>
+    <MobileLayout>
       <FlatList
         style={{ flex: 1, backgroundColor: Colors.background }}
         contentContainerStyle={{ paddingBottom: 32 }}

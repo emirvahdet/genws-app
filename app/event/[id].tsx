@@ -10,13 +10,13 @@ import {
   RefreshControl,
 } from "react-native";
 import { Image } from "expo-image";
-import { SafeAreaView } from "react-native-safe-area-context";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { LinearGradient } from "expo-linear-gradient";
 import { ArrowLeft, Check } from "lucide-react-native";
 import { supabase } from "../../lib/supabase";
 import { Colors } from "../../constants/Colors";
 import { EventRegButton } from "../../components/events/EventRegButton";
+import { MobileLayout } from "../../components/layout/MobileLayout";
 
 interface Event {
   id: string;
@@ -368,21 +368,21 @@ export default function EventDetailScreen() {
   // ─── Loading / not found ──────────────────────────────────────────────────
   if (loading) {
     return (
-      <SafeAreaView style={{ flex: 1, backgroundColor: Colors.background }} edges={["top"]}>
+      <MobileLayout>
         <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
           <ActivityIndicator size="large" color={Colors.primary} />
         </View>
-      </SafeAreaView>
+      </MobileLayout>
     );
   }
 
   if (!event) {
     return (
-      <SafeAreaView style={{ flex: 1, backgroundColor: Colors.background }} edges={["top"]}>
+      <MobileLayout>
         <View style={{ flex: 1, padding: 16 }}>
           <Text style={{ color: Colors.mutedForeground }}>Event not found</Text>
         </View>
-      </SafeAreaView>
+      </MobileLayout>
     );
   }
 
@@ -390,7 +390,7 @@ export default function EventDetailScreen() {
 
   // ─── Render ───────────────────────────────────────────────────────────────
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: Colors.background }} edges={["top"]}>
+    <MobileLayout>
       <ScrollView
         style={{ flex: 1 }}
         contentContainerStyle={{ paddingBottom: 48 }}
@@ -680,6 +680,6 @@ export default function EventDetailScreen() {
           </View>
         </View>
       </Modal>
-    </SafeAreaView>
+    </MobileLayout>
   );
 }

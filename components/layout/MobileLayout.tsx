@@ -69,92 +69,95 @@ export const MobileLayout = ({ children, hideHeader = false }: MobileLayoutProps
   }, [isViewingAs, viewAsUser]);
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: Colors.background }} edges={["top"]}>
-      {/* Top Header */}
+    <View style={{ flex: 1, backgroundColor: Colors.background }}>
+      {/* Top Header - extends into status bar */}
       {!hideHeader && (
-        <View
-          style={{
-            flexDirection: "row",
-            alignItems: "center",
-            height: 72,
-            paddingHorizontal: 16,
-            backgroundColor: Colors.card,
-            borderBottomWidth: 1,
-            borderBottomColor: Colors.border + "80",
-          }}
-        >
-          {/* Avatar */}
-          <View
-            style={{
-              width: 48,
-              height: 48,
-              borderRadius: 12,
-              backgroundColor: Colors.primary + "1A",
-              borderWidth: 1,
-              borderColor: Colors.border + "4D",
-              alignItems: "center",
-              justifyContent: "center",
-              marginRight: 12,
-              overflow: "hidden",
-            }}
-          >
-            {profile?.avatar_url ? (
-              <Image
-                source={{ uri: profile.avatar_url }}
-                style={{ width: 48, height: 48 }}
-              />
-            ) : (
-              <Text
-                style={{
-                  color: Colors.primary,
-                  fontWeight: "600",
-                  fontSize: 16,
-                }}
-              >
-                {getInitials(profile?.full_name ?? null)}
-              </Text>
-            )}
-          </View>
-
-          {/* Name + Badge */}
-          <View style={{ flex: 1, gap: 4 }}>
-            <Text
+        <View style={{ backgroundColor: Colors.card }}>
+          <SafeAreaView edges={["top"]} style={{ backgroundColor: Colors.card }}>
+            <View
               style={{
-                fontSize: 14,
-                fontWeight: "600",
-                color: Colors.foreground,
-                lineHeight: 18,
+                flexDirection: "row",
+                alignItems: "center",
+                height: 80,
+                paddingHorizontal: 16,
+                borderBottomWidth: 1,
+                borderBottomColor: Colors.border + "80",
               }}
-              numberOfLines={1}
             >
-              {profile?.full_name || "Member"}
-            </Text>
-            {profile?.generation_number != null && (
+              {/* Avatar - rounded square with light gray background */}
               <View
                 style={{
-                  alignSelf: "flex-start",
+                  width: 48,
+                  height: 48,
+                  borderRadius: 12,
+                  backgroundColor: Colors.muted, // Light gray background (#f5f5f5)
                   borderWidth: 1,
-                  borderColor: Colors.primary + "4D",
-                  borderRadius: 999,
-                  paddingHorizontal: 8,
-                  paddingVertical: 2,
-                  backgroundColor: Colors.primary + "0D",
+                  borderColor: Colors.border + "4D", // 30% opacity border
+                  alignItems: "center",
+                  justifyContent: "center",
+                  marginRight: 16,
+                  overflow: "hidden",
                 }}
               >
-                <Text style={{ fontSize: 11, color: Colors.primary }}>
-                  {profile.generation_number}
-                  {getOrdinalSuffix(profile.generation_number)} Gen
-                </Text>
+                {profile?.avatar_url ? (
+                  <Image
+                    source={{ uri: profile.avatar_url }}
+                    style={{ width: 48, height: 48 }}
+                  />
+                ) : (
+                  <Text
+                    style={{
+                      color: Colors.primary, // Dark green text
+                      fontWeight: "600",
+                      fontSize: 16,
+                    }}
+                  >
+                    {getInitials(profile?.full_name ?? null)}
+                  </Text>
+                )}
               </View>
-            )}
-          </View>
 
-          <View style={{ width: 48 }} />
+              {/* Name + Badge */}
+              <View style={{ flex: 1, gap: 4 }}>
+                <Text
+                  style={{
+                    fontSize: 14,
+                    fontWeight: "600",
+                    color: Colors.foreground,
+                    lineHeight: 18,
+                  }}
+                  numberOfLines={1}
+                >
+                  {profile?.full_name || "Member"}
+                </Text>
+                {profile?.generation_number != null && (
+                  <View
+                    style={{
+                      alignSelf: "flex-start",
+                      borderWidth: 1,
+                      borderColor: Colors.primary + "4D", // 30% opacity green border
+                      borderRadius: 999,
+                      paddingHorizontal: 8,
+                      paddingVertical: 2,
+                      backgroundColor: Colors.muted, // Light gray background
+                    }}
+                  >
+                    <Text style={{ fontSize: 12, color: Colors.primary, fontWeight: "400" }}>
+                      {profile.generation_number}
+                      {getOrdinalSuffix(profile.generation_number)} Gen
+                    </Text>
+                  </View>
+                )}
+              </View>
+
+              <View style={{ width: 48 }} />
+            </View>
+          </SafeAreaView>
         </View>
       )}
 
       {/* Content */}
       <View style={{ flex: 1 }}>{children}</View>
-    </SafeAreaView>
+    </View>
   );
 };
