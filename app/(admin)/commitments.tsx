@@ -220,7 +220,9 @@ export default function AdminCommitmentsScreen() {
   };
 
   const getStatus = (c: CommitmentWithProfile) => {
+    if (!c || !c.status) return "unknown";
     if (c.status === "cancelled") return "cancelled";
+    if (!c.expiry_date) return "unknown";
     if (new Date(c.expiry_date) < new Date()) return "expired";
     return "active";
   };

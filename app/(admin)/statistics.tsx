@@ -47,64 +47,72 @@ export default function AdminStatisticsScreen() {
   const fetchStatistics = async () => {
     setLoading(true);
     try {
-      // Event statistics
-      const { data: events, error: eventsError } = await supabase
-        .from("events")
-        .select("id, title, start_date")
-        .order("start_date", { ascending: false });
-      if (eventsError) throw eventsError;
+      // Fetch all data in parallel with aggregated queries
+      const [eventsResult, registrationsResult, attendeesResult, profilesResult] = await Promise.all([
+        supabase.from("events").select("id, title, start_date").order("start_date", { ascending: false }),
+        supabase.from("event_registrations").select("event_id, user_id").eq("refund_processed", false),
+        supabase.from("event_attendees").select("event_id, user_id").eq("verified_attendance", true),
+        supabase.from("profiles").select("id, full_name, email").order("full_name"),
+      ]);
 
-      const eventStatsData: EventStats[] = [];
-      for (const event of events || []) {
-        const { count: regCount } = await supabase
-          .from("event_registrations")
-          .select("*", { count: "exact", head: true })
-          .eq("event_id", event.id)
-          .eq("refund_processed", false);
-        const { count: verifiedCount } = await supabase
-          .from("event_attendees")
-          .select("*", { count: "exact", head: true })
-          .eq("event_id", event.id)
-          .eq("verified_attendance", true);
-        eventStatsData.push({
+      if (eventsResult.error) throw eventsResult.error;
+      if (profilesResult.error) throw profilesResult.error;
+
+      const events = eventsResult.data || [];
+      const registrations = registrationsResult.data || [];
+      const attendees = attendeesResult.data || [];
+      const profiles = profilesResult.data || [];
+
+      // Build event stats using in-memory aggregation
+      const eventRegCounts = new Map<string, number>();
+      const eventVerifiedCounts = new Map<string, number>();
+      
+      registrations.forEach(reg => {
+        eventRegCounts.set(reg.event_id, (eventRegCounts.get(reg.event_id) || 0) + 1);
+      });
+      
+      attendees.forEach(att => {
+        eventVerifiedCounts.set(att.event_id, (eventVerifiedCounts.get(att.event_id) || 0) + 1);
+      });
+
+      const eventStatsData: EventStats[] = events.map(event => {
+        const regCount = eventRegCounts.get(event.id) || 0;
+        const verifiedCount = eventVerifiedCounts.get(event.id) || 0;
+        return {
           id: event.id,
           title: event.title,
           start_date: event.start_date,
-          registered_count: regCount || 0,
-          verified_count: verifiedCount || 0,
-          unverified_count: (regCount || 0) - (verifiedCount || 0),
-        });
-      }
+          registered_count: regCount,
+          verified_count: verifiedCount,
+          unverified_count: regCount - verifiedCount,
+        };
+      });
       setEventStats(eventStatsData);
 
-      // Member statistics
-      const { data: profiles, error: profilesError } = await supabase
-        .from("profiles")
-        .select("id, full_name, email")
-        .order("full_name");
-      if (profilesError) throw profilesError;
+      // Build member stats using in-memory aggregation
+      const memberRegCounts = new Map<string, number>();
+      const memberVerifiedCounts = new Map<string, number>();
+      
+      registrations.forEach(reg => {
+        memberRegCounts.set(reg.user_id, (memberRegCounts.get(reg.user_id) || 0) + 1);
+      });
+      
+      attendees.forEach(att => {
+        memberVerifiedCounts.set(att.user_id, (memberVerifiedCounts.get(att.user_id) || 0) + 1);
+      });
 
-      const memberStatsData: MemberStats[] = [];
-      for (const profile of profiles || []) {
-        const { count: regCount } = await supabase
-          .from("event_registrations")
-          .select("*", { count: "exact", head: true })
-          .eq("user_id", profile.id)
-          .eq("refund_processed", false);
-        const { count: verifiedCount } = await supabase
-          .from("event_attendees")
-          .select("*", { count: "exact", head: true })
-          .eq("user_id", profile.id)
-          .eq("verified_attendance", true);
-        memberStatsData.push({
+      const memberStatsData: MemberStats[] = profiles.map(profile => {
+        const regCount = memberRegCounts.get(profile.id) || 0;
+        const verifiedCount = memberVerifiedCounts.get(profile.id) || 0;
+        return {
           id: profile.id,
           full_name: profile.full_name,
           email: profile.email,
-          registered_events: regCount || 0,
-          verified_events: verifiedCount || 0,
-          unverified_events: (regCount || 0) - (verifiedCount || 0),
-        });
-      }
+          registered_events: regCount,
+          verified_events: verifiedCount,
+          unverified_events: regCount - verifiedCount,
+        };
+      });
       setMemberStats(memberStatsData);
     } catch (e) {
       __DEV__ && console.log("Error fetching statistics:", e);
