@@ -392,7 +392,7 @@ export default function EventDetailScreen() {
   return (
     <MobileLayout>
       <ScrollView
-        style={{ flex: 1 }}
+        style={{ flex: 1, backgroundColor: "#f9fafb" }}
         contentContainerStyle={{ paddingBottom: 48 }}
         showsVerticalScrollIndicator={false}
         refreshControl={
@@ -536,8 +536,8 @@ export default function EventDetailScreen() {
           </View>
         </View>
 
-        {/* Registration section — white background */}
-        <View style={{ backgroundColor: "white", paddingHorizontal: 24, paddingVertical: 20 }}>
+        {/* Registration section — off-white background */}
+        <View style={{ backgroundColor: "#f9fafb", paddingHorizontal: 24, paddingVertical: 20 }}>
           {/* Attendance confirmed badge */}
           {currentUserId && isRegistered && !isWaitingList && hasVerifiedAttendance && (
             <View
@@ -599,7 +599,7 @@ export default function EventDetailScreen() {
 
         {/* Event description */}
         {event.description && (
-          <View style={{ backgroundColor: "white", paddingHorizontal: 24, paddingBottom: 24 }}>
+          <View style={{ backgroundColor: "#f9fafb", paddingHorizontal: 24, paddingBottom: 24 }}>
             <Text
               style={{
                 fontSize: 22,
