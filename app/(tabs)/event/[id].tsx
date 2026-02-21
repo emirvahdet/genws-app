@@ -8,11 +8,13 @@ import {
   Alert,
   Modal,
   RefreshControl,
+  useWindowDimensions,
 } from "react-native";
 import { Image } from "expo-image";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { LinearGradient } from "expo-linear-gradient";
 import { ArrowLeft, Check } from "lucide-react-native";
+import RenderHtml from "react-native-render-html";
 import { supabase } from "../../../lib/supabase";
 import { Colors } from "../../../constants/Colors";
 import { EventRegButton } from "../../../components/events/EventRegButton";
@@ -49,6 +51,50 @@ const fmtUTC = (d: string, f: "date" | "time" | "short" | "dt") => {
     return dt.toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit", timeZone: "UTC" });
   return `${dt.toLocaleDateString("en-GB", { day: "numeric", month: "short", timeZone: "UTC" })}, ${dt.toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit", timeZone: "UTC" })}`;
 };
+
+function EventDescription({ description }: { description: string }) {
+  const { width } = useWindowDimensions();
+  
+  return (
+    <View style={{ backgroundColor: "#f9fafb", paddingHorizontal: 24, paddingBottom: 24 }}>
+      <Text
+        style={{
+          fontSize: 22,
+          fontWeight: "700",
+          color: Colors.foreground,
+          marginBottom: 12,
+        }}
+      >
+        Event Details
+      </Text>
+      <RenderHtml
+        contentWidth={width - 48}
+        source={{ html: description }}
+        baseStyle={{
+          fontSize: 15,
+          lineHeight: 24,
+          color: "#324750",
+        }}
+        tagsStyles={{
+          p: { marginTop: 0, marginBottom: 12, color: "#324750" },
+          strong: { fontWeight: "700", color: "#00451a" },
+          em: { fontStyle: "italic" },
+          u: { textDecorationLine: "underline" },
+          a: { color: "#00451a", textDecorationLine: "underline" },
+          h1: { fontSize: 24, fontWeight: "700", color: "#00451a", marginBottom: 12 },
+          h2: { fontSize: 22, fontWeight: "700", color: "#00451a", marginBottom: 10 },
+          h3: { fontSize: 20, fontWeight: "700", color: "#00451a", marginBottom: 8 },
+          h4: { fontSize: 18, fontWeight: "600", color: "#00451a", marginBottom: 8 },
+          h5: { fontSize: 16, fontWeight: "600", color: "#00451a", marginBottom: 6 },
+          h6: { fontSize: 15, fontWeight: "600", color: "#00451a", marginBottom: 6 },
+          ul: { marginBottom: 12, color: "#324750" },
+          ol: { marginBottom: 12, color: "#324750" },
+          li: { marginBottom: 4, color: "#324750" },
+        }}
+      />
+    </View>
+  );
+}
 
 const stripHtml = (h: string) => h.replace(/<[^>]*>/g, "").replace(/&nbsp;/g, " ").trim();
 
@@ -599,21 +645,7 @@ export default function EventDetailScreen() {
 
         {/* Event description */}
         {event.description && (
-          <View style={{ backgroundColor: "#f9fafb", paddingHorizontal: 24, paddingBottom: 24 }}>
-            <Text
-              style={{
-                fontSize: 22,
-                fontWeight: "700",
-                color: Colors.foreground,
-                marginBottom: 12,
-              }}
-            >
-              Event Details
-            </Text>
-            <Text style={{ fontSize: 15, lineHeight: 24, color: "#324750" }}>
-              {stripHtml(event.description)}
-            </Text>
-          </View>
+          <EventDescription description={event.description} />
         )}
       </ScrollView>
 

@@ -25,6 +25,7 @@ import {
 import { supabase } from "../../lib/supabase";
 import { Colors } from "../../constants/Colors";
 import { EventAttendees } from "../../components/admin/EventAttendees";
+import { RichTextEditor } from "../../components/admin/RichTextEditor";
 
 const EVENT_STATUS_OPTIONS = [
   "Open to Registration",
@@ -423,7 +424,12 @@ export default function AdminEventsScreen() {
             <ScrollView showsVerticalScrollIndicator={false} style={{ marginBottom: 16 }}>
               <EF label="Title *" value={formData.title} onChangeText={(t: string) => setFormData((p) => ({ ...p, title: t }))} />
               <EF label="Excerpt" value={formData.excerpt} onChangeText={(t: string) => setFormData((p) => ({ ...p, excerpt: t }))} multiline placeholder="Short preview text" />
-              <EF label="Full Description" value={formData.description} onChangeText={(t: string) => setFormData((p) => ({ ...p, description: t }))} multiline placeholder="Detailed event description" />
+              <RichTextEditor
+                label="Full Description"
+                value={formData.description}
+                onChange={(html: string) => setFormData((p) => ({ ...p, description: html }))}
+                placeholder="Enter detailed event description with formatting..."
+              />
               <EF label="Location *" value={formData.location} onChangeText={(t: string) => setFormData((p) => ({ ...p, location: t }))} />
               <View style={{ flexDirection: "row", gap: 8 }}>
                 <View style={{ flex: 1 }}><EF label="City" value={formData.city} onChangeText={(t: string) => setFormData((p) => ({ ...p, city: t }))} /></View>
