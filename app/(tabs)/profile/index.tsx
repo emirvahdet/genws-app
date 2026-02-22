@@ -16,7 +16,7 @@ import {
   MapPin, Lock, Eye, EyeOff, ChevronRight, Mail, Shield,
   HelpCircle, LogOut, Bell, Users, Calendar as CalendarIcon,
   Newspaper, LayoutDashboard, Send, Award, BarChart3, User,
-  BookOpen,
+  BookOpen, Key,
 } from "lucide-react-native";
 import { supabase } from "../../../lib/supabase";
 import { useViewAs } from "../../../stores/ViewAsContext";
@@ -64,11 +64,7 @@ export default function ProfileScreen() {
     company: "", city: "", country: "", priorities: [], interests: [], preferred_activities: [],
   });
 
-  // Password change state
-  const [showPasswordChange, setShowPasswordChange] = useState(false);
-  const [showPassword, setShowPassword] = useState(false);
-  const [passwordData, setPasswordData] = useState({ newPassword: "", confirmPassword: "" });
-
+  
   // Update request state
   const [showUpdateRequest, setShowUpdateRequest] = useState(false);
   const [updateRequestMessage, setUpdateRequestMessage] = useState("");
@@ -119,26 +115,7 @@ export default function ProfileScreen() {
     setRefreshing(false);
   };
 
-  const handlePasswordChange = async () => {
-    if (passwordData.newPassword !== passwordData.confirmPassword) {
-      Alert.alert("Passwords Don't Match", "Please make sure both passwords are identical.");
-      return;
-    }
-    if (passwordData.newPassword.length < 8) {
-      Alert.alert("Password Too Short", "Password must be at least 8 characters long.");
-      return;
-    }
-    try {
-      const { error } = await supabase.auth.updateUser({ password: passwordData.newPassword });
-      if (error) throw error;
-      Alert.alert("Password Updated", "Your password has been changed successfully.");
-      setPasswordData({ newPassword: "", confirmPassword: "" });
-      setShowPasswordChange(false);
-    } catch (e: any) {
-      Alert.alert("Error", e.message || "Failed to change password");
-    }
-  };
-
+  
   const handleSubmitUpdateRequest = async () => {
     if (!updateRequestMessage.trim()) {
       Alert.alert("Message Required", "Please describe what changes you'd like to make.");
@@ -183,6 +160,7 @@ export default function ProfileScreen() {
   const accountItems = [
     { icon: Mail, label: "Email Preferences", action: () => router.push("/settings/email-preferences" as any) },
     { icon: Lock, label: "Privacy & Security", action: () => router.push("/settings/privacy-security" as any) },
+    { icon: Key, label: "Change Password", action: () => router.push("/settings/change-password" as any) },
   ];
 
   const adminItems = [
@@ -328,76 +306,7 @@ export default function ProfileScreen() {
           <ChevronRight size={20} color={Colors.mutedForeground} />
         </Pressable>
 
-        {/* Password */}
-        <View style={{ backgroundColor: "white", borderRadius: 16, padding: 20, borderWidth: 1, borderColor: Colors.border, marginBottom: 12 }}>
-          <View style={{ flexDirection: "row", alignItems: "center", gap: 10, marginBottom: 16 }}>
-            <Lock size={20} color={Colors.primary} />
-            <Text style={{ fontSize: 18, fontWeight: "600", color: Colors.primary }}>Password</Text>
-          </View>
-
-          {!showPasswordChange ? (
-            <Pressable
-              onPress={() => setShowPasswordChange(true)}
-              style={({ pressed }) => ({
-                borderWidth: 1, borderColor: Colors.border, borderRadius: 12,
-                paddingVertical: 10, alignItems: "center", opacity: pressed ? 0.7 : 1,
-              })}
-            >
-              <Text style={{ fontWeight: "500", color: Colors.foreground }}>Change Password</Text>
-            </Pressable>
-          ) : (
-            <View style={{ gap: 12 }}>
-              <View style={{ gap: 6 }}>
-                <Text style={{ fontSize: 12, color: Colors.foreground }}>New Password</Text>
-                <View style={{ position: "relative" }}>
-                  <TextInput
-                    style={{ backgroundColor: Colors.input, borderWidth: 1, borderColor: Colors.border, borderRadius: 10, paddingHorizontal: 12, paddingVertical: 10, paddingRight: 44, color: Colors.foreground, fontSize: 15 }}
-                    placeholder="Enter new password"
-                    placeholderTextColor={Colors.mutedForeground}
-                    secureTextEntry={!showPassword}
-                    value={passwordData.newPassword}
-                    onChangeText={(t) => setPasswordData((p) => ({ ...p, newPassword: t }))}
-                  />
-                  <Pressable
-                    onPress={() => setShowPassword((v) => !v)}
-                    style={{ position: "absolute", right: 12, top: 0, bottom: 0, justifyContent: "center" }}
-                  >
-                    {showPassword ? <EyeOff size={18} color={Colors.mutedForeground} /> : <Eye size={18} color={Colors.mutedForeground} />}
-                  </Pressable>
-                </View>
-                <Text style={{ fontSize: 10, color: Colors.mutedForeground }}>Must be at least 8 characters</Text>
-              </View>
-
-              <View style={{ gap: 6 }}>
-                <Text style={{ fontSize: 12, color: Colors.foreground }}>Confirm Password</Text>
-                <TextInput
-                  style={{ backgroundColor: Colors.input, borderWidth: 1, borderColor: Colors.border, borderRadius: 10, paddingHorizontal: 12, paddingVertical: 10, color: Colors.foreground, fontSize: 15 }}
-                  placeholder="Confirm new password"
-                  placeholderTextColor={Colors.mutedForeground}
-                  secureTextEntry={!showPassword}
-                  value={passwordData.confirmPassword}
-                  onChangeText={(t) => setPasswordData((p) => ({ ...p, confirmPassword: t }))}
-                />
-              </View>
-
-              <View style={{ flexDirection: "row", gap: 8 }}>
-                <Pressable
-                  onPress={handlePasswordChange}
-                  style={({ pressed }) => ({ flex: 1, backgroundColor: Colors.primary, borderRadius: 10, paddingVertical: 10, alignItems: "center", opacity: pressed ? 0.8 : 1 })}
-                >
-                  <Text style={{ color: "white", fontWeight: "600" }}>Update Password</Text>
-                </Pressable>
-                <Pressable
-                  onPress={() => { setShowPasswordChange(false); setPasswordData({ newPassword: "", confirmPassword: "" }); }}
-                  style={({ pressed }) => ({ flex: 1, borderWidth: 1, borderColor: Colors.border, borderRadius: 10, paddingVertical: 10, alignItems: "center", opacity: pressed ? 0.7 : 1 })}
-                >
-                  <Text style={{ color: Colors.foreground, fontWeight: "500" }}>Cancel</Text>
-                </Pressable>
-              </View>
-            </View>
-          )}
-        </View>
-
+        
         {/* Settings Sections */}
         <View style={{ marginTop: 0, gap: 12 }}>
           {SETTINGS_SECTIONS.map((section, idx) => (
