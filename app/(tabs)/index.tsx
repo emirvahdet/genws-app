@@ -148,14 +148,17 @@ export default function DashboardScreen() {
                   {!hasVerifiedAttendance ? (
                     <View style={{ backgroundColor: "white", borderWidth: 1, borderColor: Colors.primary + "33", borderRadius: 12, padding: 16, alignItems: "center", gap: 12 }}>
                       <Text style={{ fontSize: 14, color: Colors.mutedForeground, textAlign: "center" }}>
-                        Please verify your attendance to connect with members.
+                        Verify your attendance to connect with members.
                       </Text>
                       <Pressable
                         onPress={() => { setSelectedAttendanceEventId(event.id); setShowAttendanceQR(true); }}
-                        style={({ pressed }) => ({ flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 8, width: "100%", borderWidth: 2, borderColor: Colors.primary, borderRadius: 12, paddingVertical: 12, opacity: pressed ? 0.75 : 1 })}
+                        style={({ pressed }) => ({ flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 4, width: "100%", borderWidth: 2, borderColor: Colors.primary, borderRadius: 12, paddingVertical: 12, opacity: pressed ? 0.75 : 1 })}
                       >
-                        <QrCode size={16} color={Colors.primary} />
-                        <Text style={{ color: Colors.primary, fontWeight: "600" }}>Show Attendance QR</Text>
+                        <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 8 }}>
+                          <QrCode size={16} color={Colors.primary} />
+                          <Text style={{ color: Colors.primary, fontWeight: "600" }}>Show Attendance QR</Text>
+                        </View>
+                        <Text style={{ color: Colors.primary, fontSize: 12, fontWeight: "400" }}>{event.title}</Text>
                       </Pressable>
                     </View>
                   ) : (

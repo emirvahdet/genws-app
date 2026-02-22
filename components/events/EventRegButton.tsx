@@ -54,11 +54,11 @@ const SBtn = ({ label, onPress }: { label: string; onPress: () => void }) => (
       borderRadius: 12,
       paddingVertical: 14,
       alignItems: "center",
-      backgroundColor: Colors.muted,
+      backgroundColor: Colors.secondary,
       opacity: pressed ? 0.7 : 1,
     })}
   >
-    <Text style={{ fontSize: 15, fontWeight: "500", color: Colors.foreground }}>{label}</Text>
+    <Text style={{ fontSize: 15, fontWeight: "500", color: Colors.secondaryForeground }}>{label}</Text>
   </Pressable>
 );
 

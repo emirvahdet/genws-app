@@ -452,7 +452,7 @@ export default function EventDetailScreen() {
     <MobileLayout>
       <ScrollView
         style={{ flex: 1, backgroundColor: "#f9fafb" }}
-        contentContainerStyle={{ paddingBottom: 48 }}
+        contentContainerStyle={{ paddingBottom: 16 }}
         showsVerticalScrollIndicator={false}
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={Colors.primary} />
@@ -631,16 +631,14 @@ export default function EventDetailScreen() {
             onRegister={handleRegister}
             onCancelPress={() => {
               Alert.alert(
-                isWaitingList ? "Leave Waitlist?" : "Cancel Registration?",
+                isWaitingList ? "Leave Waitlist?" : "Are you sure you want to cancel?",
                 isWaitingList
                   ? "Are you sure you want to leave the waitlist for this event?"
-                  : event?.status.includes("Cost Bearing Event") && event?.price_charged_via_app
-                  ? "Your cancellation will be submitted for admin approval and a refund will be processed."
-                  : "Are you sure you want to cancel your registration for this event?",
+                  : "Your seat will be transferred to another member.",
                 [
-                  { text: "Keep", style: "cancel", onPress: () => {} },
+                  { text: "Keep my registration", style: "cancel", onPress: () => {} },
                   { 
-                    text: isWaitingList ? "Leave Waitlist" : "Cancel", 
+                    text: isWaitingList ? "Leave Waitlist" : "Cancel my registration", 
                     style: "destructive",
                     onPress: handleDeregister 
                   }
