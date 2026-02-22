@@ -243,7 +243,7 @@ export function CommitmentDiscounts() {
                   <View style={{ flexDirection: "row", gap: 6 }}>
                     {(["percentage", "fixed"] as const).map((t) => (
                       <Pressable key={t} onPress={() => setFormData((p) => ({ ...p, discount_type: t }))} style={{ flex: 1, paddingVertical: 8, borderRadius: 8, alignItems: "center", borderWidth: 1, borderColor: formData.discount_type === t ? Colors.primary : Colors.border, backgroundColor: formData.discount_type === t ? Colors.primary + "1A" : "white" }}>
-                        <Text style={{ fontSize: 11, color: formData.discount_type === t ? Colors.primary : Colors.mutedForeground }}>{t === "percentage" ? "%" : "$"}</Text>
+                        <Text style={{ fontSize: 11, color: formData.discount_type === t ? "white" : Colors.mutedForeground }}>{t === "percentage" ? "%" : "$"}</Text>
                       </Pressable>
                     ))}
                   </View>
@@ -260,7 +260,7 @@ export function CommitmentDiscounts() {
                 <View style={{ flexDirection: "row", gap: 6 }}>
                   {(["all", "groups", "members"] as const).map((t) => (
                     <Pressable key={t} onPress={() => setFormData((p) => ({ ...p, target_type: t, selectedGroups: [], selectedMembers: [] }))} style={{ flex: 1, paddingVertical: 8, borderRadius: 8, alignItems: "center", borderWidth: 1, borderColor: formData.target_type === t ? Colors.primary : Colors.border, backgroundColor: formData.target_type === t ? Colors.primary + "1A" : "white" }}>
-                      <Text style={{ fontSize: 10, color: formData.target_type === t ? Colors.primary : Colors.mutedForeground, textTransform: "capitalize" }}>{t === "all" ? "All" : t}</Text>
+                      <Text style={{ fontSize: 10, color: formData.target_type === t ? "white" : Colors.mutedForeground, textTransform: "capitalize" }}>{t === "all" ? "All" : t}</Text>
                     </Pressable>
                   ))}
                 </View>

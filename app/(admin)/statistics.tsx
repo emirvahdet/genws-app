@@ -215,7 +215,7 @@ export default function AdminStatisticsScreen() {
                 <View key={member.id} style={{ backgroundColor: "white", borderRadius: 16, padding: 14, borderWidth: 1, borderColor: Colors.border }}>
                   <View style={{ flexDirection: "row", alignItems: "center", gap: 10, marginBottom: 10 }}>
                     <View style={{ width: 36, height: 36, borderRadius: 18, backgroundColor: Colors.primary + "1A", alignItems: "center", justifyContent: "center" }}>
-                      <Text style={{ fontSize: 12, fontWeight: "600", color: Colors.primary }}>
+                      <Text style={{ fontSize: 12, fontWeight: "600", color: "white" }}>
                         {member.full_name.split(" ").map((n) => n[0]).join("").substring(0, 2)}
                       </Text>
                     </View>

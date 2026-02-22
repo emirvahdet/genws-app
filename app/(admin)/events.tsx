@@ -592,7 +592,7 @@ return (
                                 backgroundColor: formData.currency === c ? Colors.primary + "1A" : "white",
                               }}
                             >
-                              <Text style={{ fontSize: 12, fontWeight: "500", color: formData.currency === c ? Colors.primary : Colors.mutedForeground }}>{c}</Text>
+                              <Text style={{ fontSize: 12, fontWeight: "500", color: formData.currency === c ? "white" : Colors.mutedForeground }}>{c}</Text>
                             </Pressable>
                           ))}
                         </View>

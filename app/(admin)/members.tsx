@@ -468,10 +468,10 @@ export default function AdminMembersScreen() {
             opacity: pressed ? 0.8 : 1,
           })}
         >
-          <Text style={{ fontSize: 13, color: selectedStages.length > 0 ? Colors.primary : Colors.mutedForeground }}>
+          <Text style={{ fontSize: 13, color: selectedStages.length > 0 ? "white" : Colors.mutedForeground }}>
             {selectedStages.length > 0 ? `${selectedStages.length} Stage${selectedStages.length > 1 ? "s" : ""} Selected` : "Filter by Stage"}
           </Text>
-          <ChevronDown size={16} color={selectedStages.length > 0 ? Colors.primary : Colors.mutedForeground} />
+          <ChevronDown size={16} color={selectedStages.length > 0 ? "white" : Colors.mutedForeground} />
         </Pressable>
 
         {showStageFilter && (

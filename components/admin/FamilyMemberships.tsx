@@ -247,7 +247,7 @@ export function FamilyMemberships() {
                 <View style={{ flexDirection: "row", gap: 8 }}>
                   {([2, 3] as const).map((n) => (
                     <Pressable key={n} onPress={() => { setMemberCount(n); setSelectedFamilyMembers([]); }} style={{ flex: 1, paddingVertical: 10, borderRadius: 10, alignItems: "center", borderWidth: 1, borderColor: memberCount === n ? Colors.primary : Colors.border, backgroundColor: memberCount === n ? Colors.primary + "1A" : "white" }}>
-                      <Text style={{ fontSize: 12, color: memberCount === n ? Colors.primary : Colors.mutedForeground }}>{n} Members</Text>
+                      <Text style={{ fontSize: 12, color: memberCount === n ? "white" : Colors.mutedForeground }}>{n} Members</Text>
                     </Pressable>
                   ))}
                 </View>
@@ -260,7 +260,7 @@ export function FamilyMemberships() {
                   <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", backgroundColor: Colors.primary + "1A", borderRadius: 10, padding: 10, marginBottom: 6 }}>
                     <View style={{ flexDirection: "row", alignItems: "center", gap: 6 }}>
                       <Crown size={14} color={Colors.primary} />
-                      <Text style={{ fontSize: 12, fontWeight: "500", color: Colors.primary }}>{allProfiles.find((p) => p.id === primaryMemberId)?.full_name}</Text>
+                      <Text style={{ fontSize: 12, fontWeight: "500", color: "white" }}>{allProfiles.find((p) => p.id === primaryMemberId)?.full_name}</Text>
                     </View>
                     <Pressable onPress={() => setPrimaryMemberId("")}><Text style={{ fontSize: 12, color: Colors.primary }}>Change</Text></Pressable>
                   </View>

@@ -185,26 +185,28 @@ export default function ProfileScreen() {
     { icon: Lock, label: "Privacy & Security", action: () => router.push("/settings/privacy-security" as any) },
   ];
 
-  if (isAdmin) {
-    accountItems.push(
-      { icon: CalendarIcon, label: "Admin-Events", action: () => router.push("/(admin)/events" as any) },
-      { icon: Users, label: "Admin-Members", action: () => router.push("/(admin)/members" as any) },
-      { icon: Users, label: "Admin Groups", action: () => router.push("/(admin)/groups" as any) },
-      { icon: Newspaper, label: "Admin-News", action: () => router.push("/(admin)/news" as any) },
-      { icon: Bell, label: "Admin-Updates", action: () => router.push("/(admin)/updates" as any) },
-      { icon: Mail, label: "Admin-Forms", action: () => router.push("/(admin)/forms" as any) },
-      { icon: Award, label: "Admin-Commitments", action: () => router.push("/(admin)/commitments" as any) },
-      { icon: BarChart3, label: "Admin Statistics", action: () => router.push("/(admin)/statistics" as any) },
-      { icon: LayoutDashboard, label: "Admin Dashboard", action: () => router.push("/(admin)/" as any) },
-      { icon: Send, label: "Admin Emails", action: () => router.push("/(admin)/emails" as any) },
-    );
-  }
+  const adminItems = [
+    { icon: CalendarIcon, label: "Admin-Events", action: () => router.push("/(admin)/events" as any) },
+    { icon: Users, label: "Admin-Members", action: () => router.push("/(admin)/members" as any) },
+    { icon: Users, label: "Admin Groups", action: () => router.push("/(admin)/groups" as any) },
+    { icon: Newspaper, label: "Admin-News", action: () => router.push("/(admin)/news" as any) },
+    { icon: Bell, label: "Admin-Updates", action: () => router.push("/(admin)/updates" as any) },
+    { icon: Mail, label: "Admin-Forms", action: () => router.push("/(admin)/forms" as any) },
+    { icon: Award, label: "Admin-Commitments", action: () => router.push("/(admin)/commitments" as any) },
+    { icon: BarChart3, label: "Admin Statistics", action: () => router.push("/(admin)/statistics" as any) },
+    { icon: LayoutDashboard, label: "Admin Dashboard", action: () => router.push("/(admin)/" as any) },
+    { icon: Send, label: "Admin Emails", action: () => router.push("/(admin)/emails" as any) },
+  ];
 
   const SETTINGS_SECTIONS = [
     {
       title: "ACCOUNT SETTINGS",
       items: accountItems,
     },
+    ...(isAdmin ? [{
+      title: "ADMIN SETTINGS",
+      items: adminItems,
+    }] : []),
     {
       title: "SUPPORT",
       items: [
@@ -397,9 +399,7 @@ export default function ProfileScreen() {
         </View>
 
         {/* Settings Sections */}
-        <View style={{ marginTop: 16, gap: 12 }}>
-          <Text style={{ fontSize: 20, fontWeight: "600", color: Colors.foreground }}>Settings</Text>
-
+        <View style={{ marginTop: 0, gap: 12 }}>
           {SETTINGS_SECTIONS.map((section, idx) => (
             <View key={idx} style={{ backgroundColor: "white", borderRadius: 16, borderWidth: 1, borderColor: Colors.border, overflow: "hidden" }}>
               <View style={{ paddingHorizontal: 20, paddingTop: 16, paddingBottom: 8 }}>
