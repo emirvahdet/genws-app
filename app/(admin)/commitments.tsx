@@ -509,7 +509,7 @@ export default function AdminCommitmentsScreen() {
             <View style={{ flexDirection: "row", gap: 6 }}>
               {(["all", "active", "cancelled", "expired"] as StatusFilter[]).map((s) => (
                 <Pressable key={s} onPress={() => setStatusFilter(s)} style={{ paddingHorizontal: 12, paddingVertical: 6, borderRadius: 999, borderWidth: 1, borderColor: statusFilter === s ? Colors.primary : Colors.border, backgroundColor: statusFilter === s ? Colors.primary + "1A" : "white" }}>
-                  <Text style={{ fontSize: 11, color: statusFilter === s ? Colors.primary : Colors.mutedForeground, textTransform: "capitalize" }}>{s === "all" ? "All Status" : s}</Text>
+                  <Text style={{ fontSize: 11, color: statusFilter === s ? "white" : Colors.mutedForeground, textTransform: "capitalize" }}>{s === "all" ? "All Status" : s}</Text>
                 </Pressable>
               ))}
             </View>
@@ -613,7 +613,7 @@ export default function AdminCommitmentsScreen() {
               <View style={{ flexDirection: "row", gap: 6 }}>
                 {["all", "completed", "failed", "pending", "refunded"].map((s) => (
                   <Pressable key={s} onPress={() => setHistoryStatusFilter(s)} style={{ paddingHorizontal: 10, paddingVertical: 5, borderRadius: 999, borderWidth: 1, borderColor: historyStatusFilter === s ? Colors.primary : Colors.border, backgroundColor: historyStatusFilter === s ? Colors.primary + "1A" : "white" }}>
-                    <Text style={{ fontSize: 11, color: historyStatusFilter === s ? Colors.primary : Colors.mutedForeground, textTransform: "capitalize" }}>{s} ({s === "all" ? paymentHistory.length : paymentHistory.filter((p) => p.status === s).length})</Text>
+                    <Text style={{ fontSize: 11, color: historyStatusFilter === s ? "white" : Colors.mutedForeground, textTransform: "capitalize" }}>{s} ({s === "all" ? paymentHistory.length : paymentHistory.filter((p) => p.status === s).length})</Text>
                   </Pressable>
                 ))}
               </View>
@@ -708,8 +708,8 @@ export default function AdminCommitmentsScreen() {
               <TextInput style={{ backgroundColor: Colors.input, borderWidth: 1, borderColor: Colors.border, borderRadius: 10, padding: 9, fontSize: 13, color: Colors.foreground, marginBottom: 6 }} placeholder="Search members..." placeholderTextColor={Colors.mutedForeground} value={memberSearchQuery} onChangeText={setMemberSearchQuery} />
               {selectedMemberId ? (
                 <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", backgroundColor: Colors.primary + "1A", borderRadius: 10, padding: 10, marginBottom: 12 }}>
-                  <Text style={{ fontSize: 13, fontWeight: "500", color: Colors.primary }}>{allMembers.find((m) => m.id === selectedMemberId)?.full_name}</Text>
-                  <Pressable onPress={() => setSelectedMemberId("")}><XCircle size={16} color={Colors.primary} /></Pressable>
+                  <Text style={{ fontSize: 13, fontWeight: "500", color: "white" }}>{allMembers.find((m) => m.id === selectedMemberId)?.full_name}</Text>
+                  <Pressable onPress={() => setSelectedMemberId("")}><XCircle size={16} color="white" /></Pressable>
                 </View>
               ) : (
                 <View style={{ borderWidth: 1, borderColor: Colors.border, borderRadius: 10, maxHeight: 150, marginBottom: 12 }}>

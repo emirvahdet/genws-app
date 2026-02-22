@@ -291,7 +291,10 @@ export default function DashboardScreen() {
                   return (
                     <View key={ci} style={{ flex: 1, aspectRatio: 1, alignItems: "center", justifyContent: "center" }}>
                       {isEvent ? (
-                        <View style={{ width: 32, height: 32, borderRadius: 16, backgroundColor: Colors.primary, alignItems: "center", justifyContent: "center" }}>
+                        <View style={{ width: 32, height: 32, borderRadius: 16, backgroundColor: Colors.primary, alignItems: "center", justifyContent: "center", position: "relative", overflow: "visible" }}>
+                          {isRegistered && (
+                            <View style={{ position: "absolute", top: -1, right: -1, width: 10, height: 10, borderRadius: 5, backgroundColor: Colors.copper, borderWidth: 1.5, borderColor: "#FFFFFF", zIndex: 10 }} />
+                          )}
                           <Pressable onPress={() => handleDatePress(date)} style={({ pressed }) => ({ opacity: pressed ? 0.7 : 1 })}>
                             <Text style={{ fontSize: 14, fontWeight: isToday ? "700" : "400", color: Colors.primaryForeground }}>
                               {day}

@@ -108,10 +108,11 @@ export const useDashboard = () => {
       const effectiveId = getEffectiveUserId(user.id);
       const { data, error } = await supabase
         .from("event_registrations")
-        .select("event_id")
+        .select("event_id, refund_processed")
         .eq("user_id", effectiveId);
       if (error) throw error;
-      setRegistrations(new Set(data?.map((r) => r.event_id) || []));
+      // Only include active registrations (not cancelled/refunded)
+      setRegistrations(new Set(data?.filter((r) => !r.refund_processed).map((r) => r.event_id) || []));
     } catch (error: unknown) {
       __DEV__ && console.log("Error fetching registrations:", error);
     }
