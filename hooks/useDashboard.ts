@@ -137,13 +137,16 @@ export const useDashboard = () => {
       const eventIds = networkingEvents.map((e) => e.id);
       const [{ data: userRegistrations, error: regError }, { data: attendances, error: attendanceError }] =
         await Promise.all([
-          supabase.from("event_registrations").select("event_id").eq("user_id", effectiveId).in("event_id", eventIds),
+          supabase.from("event_registrations").select("event_id, refund_processed").eq("user_id", effectiveId).in("event_id", eventIds),
           supabase.from("event_attendees").select("event_id, verified_attendance").eq("user_id", effectiveId).in("event_id", eventIds),
         ]);
       if (regError) throw regError;
       if (attendanceError) throw attendanceError;
 
-      const registeredEventIds = new Set(userRegistrations?.map((r) => r.event_id) || []);
+      // Only include active registrations (not cancelled/refunded)
+      const registeredEventIds = new Set(
+        userRegistrations?.filter((r) => !r.refund_processed).map((r) => r.event_id) || []
+      );
       const verifiedMap = new Map(attendances?.map((a) => [a.event_id, a.verified_attendance]) || []);
 
       const todayStr = new Date().toISOString().split("T")[0];

@@ -173,13 +173,29 @@ export default function EventDetailScreen() {
     try {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
-      const { data } = await supabase
-        .from("event_attendees")
-        .select("verified_attendance")
+      
+      // First check if user has an active registration (not cancelled/refunded)
+      const { data: regData } = await (supabase.from("event_registrations") as any)
+        .select("id, refund_processed")
         .eq("event_id", id)
         .eq("user_id", user.id)
+        .order("created_at", { ascending: false })
+        .limit(1)
         .maybeSingle();
-      setHasVerifiedAttendance(data?.verified_attendance || false);
+      
+      // Only check attendance if user has active registration
+      if (regData && !regData.refund_processed) {
+        const { data } = await supabase
+          .from("event_attendees")
+          .select("verified_attendance")
+          .eq("event_id", id)
+          .eq("user_id", user.id)
+          .maybeSingle();
+        setHasVerifiedAttendance(data?.verified_attendance || false);
+      } else {
+        // User has no active registration, reset attendance
+        setHasVerifiedAttendance(false);
+      }
     } catch {}
   }, [id]);
 
