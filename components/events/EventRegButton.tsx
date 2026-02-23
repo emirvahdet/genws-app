@@ -226,7 +226,7 @@ const PlusOneSection = ({
           }}
         />
         <Text style={{ fontSize: 14, color: "#324750", flex: 1 }}>
-          I am bringing a +1 who is NOT a GWS member
+          I'm bringing a +1 who is not a GWS member
         </Text>
       </Pressable>
     )}

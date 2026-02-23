@@ -71,18 +71,16 @@ export const useDashboard = () => {
 
   const fetchUpdates = useCallback(async () => {
     try {
-      const [{ data: updatesData, error: updatesError }, { data: newsData, error: newsError }] =
-        await Promise.all([
-          supabase.from("updates").select("*").eq("published", true).order("created_at", { ascending: false }),
-          supabase.from("news").select("*").eq("published", true).order("created_at", { ascending: false }),
-        ]);
+      const { data: updatesData, error: updatesError } = await supabase
+        .from("updates")
+        .select("*")
+        .eq("published", true)
+        .order("created_at", { ascending: false });
+      
       if (updatesError) throw updatesError;
-      if (newsError) throw newsError;
-      const combined = [
-        ...(updatesData || []).map((u) => ({ ...u, type: "update" as const })),
-        ...(newsData || []).map((n) => ({ ...n, type: "news" as const })),
-      ].sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
-      setUpdates(combined);
+      
+      const updatesWithType = (updatesData || []).map((u) => ({ ...u, type: "update" as const }));
+      setUpdates(updatesWithType);
     } catch (error: unknown) {
       __DEV__ && console.log("Error fetching updates:", error);
     }
