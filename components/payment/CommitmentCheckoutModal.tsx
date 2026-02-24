@@ -10,6 +10,7 @@ import {
   KeyboardAvoidingView,
   Platform,
   Alert,
+  TouchableOpacity,
 } from "react-native";
 import { WebView } from "react-native-webview";
 import {
@@ -111,6 +112,14 @@ export const CommitmentCheckoutModal = ({
   const [showKvkkDialog, setShowKvkkDialog] = useState(false);
   const [showSalesDialog, setShowSalesDialog] = useState(false);
   const webViewRef = useRef<WebView>(null);
+
+  useEffect(() => {
+    __DEV__ && console.log('showKvkkDialog changed:', showKvkkDialog);
+  }, [showKvkkDialog]);
+
+  useEffect(() => {
+    __DEV__ && console.log('showSalesDialog changed:', showSalesDialog);
+  }, [showSalesDialog]);
 
   useEffect(() => {
     if (open) {
@@ -773,8 +782,9 @@ export const CommitmentCheckoutModal = ({
     <View style={{ marginBottom: 20, gap: 12 }}>
       <Text style={{ fontSize: 14, fontWeight: "600", color: Colors.foreground }}>Terms & Agreements</Text>
 
-      <Pressable onPress={() => setAcceptedKvkk(!acceptedKvkk)} style={{ flexDirection: "row", alignItems: "flex-start", gap: 10 }}>
-        <View
+      <View style={{ flexDirection: "row", alignItems: "center", flexWrap: "wrap", gap: 8 }}>
+        <Pressable
+          onPress={() => setAcceptedKvkk(!acceptedKvkk)}
           style={{
             width: 20,
             height: 20,
@@ -784,25 +794,30 @@ export const CommitmentCheckoutModal = ({
             backgroundColor: acceptedKvkk ? Colors.primary : "transparent",
             alignItems: "center",
             justifyContent: "center",
-            marginTop: 1,
           }}
         >
           {acceptedKvkk && <Check size={12} color="white" />}
-        </View>
-        <Text style={{ fontSize: 12, color: Colors.foreground, flex: 1, lineHeight: 18 }}>
-          I accept the{" "}
-          <Text
-            style={{ color: Colors.primary, textDecorationLine: "underline" }}
-            onPress={() => setShowKvkkDialog(true)}
-          >
+        </Pressable>
+        <Text style={{ fontSize: 12, color: Colors.foreground }}>I accept the </Text>
+        <TouchableOpacity
+          onPress={() => {
+            __DEV__ && console.log('KVKK link tapped');
+            setShowKvkkDialog(true);
+          }}
+          hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+          style={{ zIndex: 999 }}
+          activeOpacity={0.7}
+        >
+          <Text style={{ fontSize: 12, color: Colors.primary, textDecorationLine: "underline" }}>
             KVKK Disclosure Notice
           </Text>
-          {" "}<Text style={{ color: Colors.destructive }}>*</Text>
-        </Text>
-      </Pressable>
+        </TouchableOpacity>
+        <Text style={{ fontSize: 12, color: Colors.destructive }}>*</Text>
+      </View>
 
-      <Pressable onPress={() => setAcceptedSales(!acceptedSales)} style={{ flexDirection: "row", alignItems: "flex-start", gap: 10 }}>
-        <View
+      <View style={{ flexDirection: "row", alignItems: "center", flexWrap: "wrap", gap: 8 }}>
+        <Pressable
+          onPress={() => setAcceptedSales(!acceptedSales)}
           style={{
             width: 20,
             height: 20,
@@ -812,22 +827,26 @@ export const CommitmentCheckoutModal = ({
             backgroundColor: acceptedSales ? Colors.primary : "transparent",
             alignItems: "center",
             justifyContent: "center",
-            marginTop: 1,
           }}
         >
           {acceptedSales && <Check size={12} color="white" />}
-        </View>
-        <Text style={{ fontSize: 12, color: Colors.foreground, flex: 1, lineHeight: 18 }}>
-          I accept the{" "}
-          <Text
-            style={{ color: Colors.primary, textDecorationLine: "underline" }}
-            onPress={() => setShowSalesDialog(true)}
-          >
+        </Pressable>
+        <Text style={{ fontSize: 12, color: Colors.foreground }}>I accept the </Text>
+        <TouchableOpacity
+          onPress={() => {
+            __DEV__ && console.log('Distance Sales Agreement link tapped');
+            setShowSalesDialog(true);
+          }}
+          hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+          style={{ zIndex: 999 }}
+          activeOpacity={0.7}
+        >
+          <Text style={{ fontSize: 12, color: Colors.primary, textDecorationLine: "underline" }}>
             Distance Sales Agreement
           </Text>
-          {" "}<Text style={{ color: Colors.destructive }}>*</Text>
-        </Text>
-      </Pressable>
+        </TouchableOpacity>
+        <Text style={{ fontSize: 12, color: Colors.destructive }}>*</Text>
+      </View>
 
       <Text style={{ fontSize: 11, color: Colors.mutedForeground }}>
         <Text style={{ color: Colors.destructive }}>*</Text> Required fields
@@ -994,7 +1013,8 @@ export const CommitmentCheckoutModal = ({
 
   return (
     <>
-      <Modal visible={open} animationType="slide" presentationStyle="pageSheet" onRequestClose={handleClose}>
+      {/* Main Commitment Modal */}
+      <Modal visible={open && !showKvkkDialog && !showSalesDialog} animationType="slide" presentationStyle="pageSheet" onRequestClose={handleClose}>
         <View style={{ flex: 1, backgroundColor: "white" }}>
           {step === "form" && (
             <View style={{ flexDirection: "row", justifyContent: "flex-end", padding: 16, paddingBottom: 0 }}>
