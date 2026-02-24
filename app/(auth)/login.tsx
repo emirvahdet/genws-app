@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -12,16 +12,62 @@ import {
 } from "react-native";
 import { useRouter } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Lock, Key, ArrowRight } from "lucide-react-native";
+import { Lock, Key, ArrowRight, Fingerprint } from "lucide-react-native";
 import { useAuth } from "../../hooks/useAuth";
+import { useBiometrics } from "../../hooks/useBiometrics";
 import { Colors } from "../../constants/Colors";
 
 export default function LoginScreen() {
   const router = useRouter();
   const { signIn } = useAuth();
+  const {
+    isSupported,
+    isEnrolled,
+    isEnabled,
+    biometricType,
+    authenticateWithBiometrics,
+    enableBiometricLogin,
+    hasShownBiometricPrompt,
+    markBiometricPromptShown,
+  } = useBiometrics();
   const [identifier, setIdentifier] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [isBiometricLoading, setIsBiometricLoading] = useState(false);
+
+  const promptBiometricSetup = async (identifier: string, password: string) => {
+    const hasShown = await hasShownBiometricPrompt();
+    if (hasShown || !isSupported || !isEnrolled) {
+      return;
+    }
+
+    Alert.alert(
+      `Enable ${biometricType || 'Biometric'} Login?`,
+      `Would you like to use ${biometricType || 'biometric authentication'} for faster login next time?`,
+      [
+        {
+          text: 'Not Now',
+          style: 'cancel',
+          onPress: async () => {
+            await markBiometricPromptShown();
+          },
+        },
+        {
+          text: 'Enable',
+          onPress: async () => {
+            await markBiometricPromptShown();
+            const result = await enableBiometricLogin(identifier, password);
+            if (result.success) {
+              Alert.alert(
+                'Success',
+                `${biometricType || 'Biometric'} login enabled. You can now login quickly using ${biometricType?.toLowerCase() || 'biometrics'}.`
+              );
+            }
+          },
+        },
+      ]
+    );
+  };
 
   const handleSubmit = async () => {
     if (!identifier.trim() || !password.trim()) {
@@ -38,6 +84,11 @@ export default function LoginScreen() {
         return;
       }
 
+      // Prompt for biometric setup after successful login
+      if (!result.mustResetPassword) {
+        await promptBiometricSetup(identifier.trim(), password);
+      }
+
       if (result.mustResetPassword) {
         router.replace("/(auth)/password-reset");
       } else {
@@ -45,6 +96,53 @@ export default function LoginScreen() {
       }
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const handleBiometricLogin = async () => {
+    setIsBiometricLoading(true);
+    try {
+      const result = await authenticateWithBiometrics();
+
+      if (!result.success) {
+        if (result.error !== 'Authentication failed') {
+          Alert.alert('Error', result.error || 'Biometric authentication failed');
+        }
+        return;
+      }
+
+      if (!result.credentials) {
+        Alert.alert('Error', 'No saved credentials found');
+        return;
+      }
+
+      const signInResult = await signIn(result.credentials.identifier, result.credentials.password);
+
+      if (!signInResult.success) {
+        Alert.alert(
+          'Login Failed',
+          'Your saved credentials are invalid. Please login with your batch number and key.',
+          [
+            {
+              text: 'OK',
+              onPress: async () => {
+                // Disable biometric login since credentials are invalid
+                const { disableBiometricLogin } = useBiometrics();
+                await disableBiometricLogin();
+              },
+            },
+          ]
+        );
+        return;
+      }
+
+      if (signInResult.mustResetPassword) {
+        router.replace("/(auth)/password-reset");
+      } else {
+        router.replace("/(tabs)");
+      }
+    } finally {
+      setIsBiometricLoading(false);
     }
   };
 
@@ -77,6 +175,47 @@ export default function LoginScreen() {
                 Enter your credentials to access your account
               </Text>
             </View>
+
+            {/* Biometric Login Button */}
+            {isEnabled && (
+              <Pressable
+                onPress={handleBiometricLogin}
+                disabled={isBiometricLoading}
+                style={({ pressed }) => ({
+                  backgroundColor: Colors.primary,
+                  borderRadius: 16,
+                  paddingVertical: 20,
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  flexDirection: 'row',
+                  gap: 12,
+                  marginBottom: 16,
+                  opacity: pressed || isBiometricLoading ? 0.75 : 1,
+                })}
+              >
+                {isBiometricLoading ? (
+                  <ActivityIndicator size="small" color="white" />
+                ) : (
+                  <>
+                    <Fingerprint size={24} color="white" />
+                    <Text style={{ color: 'white', fontWeight: '600', fontSize: 16 }}>
+                      Login with {biometricType || 'Biometrics'}
+                    </Text>
+                  </>
+                )}
+              </Pressable>
+            )}
+
+            {/* Divider */}
+            {isEnabled && (
+              <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 16 }}>
+                <View style={{ flex: 1, height: 1, backgroundColor: 'rgba(176,196,208,0.3)' }} />
+                <Text style={{ marginHorizontal: 16, color: Colors.mutedForeground, fontSize: 14 }}>
+                  or
+                </Text>
+                <View style={{ flex: 1, height: 1, backgroundColor: 'rgba(176,196,208,0.3)' }} />
+              </View>
+            )}
 
             {/* Login Card */}
             <View style={{ backgroundColor: "rgba(255,255,255,0.7)", borderWidth: 1, borderColor: "rgba(176,196,208,0.3)", borderRadius: 16, padding: 24 }}>
