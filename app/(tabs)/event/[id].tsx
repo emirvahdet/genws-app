@@ -19,6 +19,7 @@ import { supabase } from "../../../lib/supabase";
 import { Colors } from "../../../constants/Colors";
 import { EventRegButton } from "../../../components/events/EventRegButton";
 import { MobileLayout } from "../../../components/layout/MobileLayout";
+import { QNBPaymentModal } from "../../../components/payment/QNBPaymentModal";
 
 interface Event {
   id: string;
@@ -114,6 +115,7 @@ export default function EventDetailScreen() {
   const [registration, setRegistration] = useState<any>(null);
   const [hasVerifiedAttendance, setHasVerifiedAttendance] = useState(false);
   const [registering, setRegistering] = useState(false);
+  const [showPaymentDialog, setShowPaymentDialog] = useState(false);
   
   // +1 guest state
   const [plusOneGuest, setPlusOneGuest] = useState<{ name: string; email: string } | null>(null);
@@ -281,7 +283,9 @@ export default function EventDetailScreen() {
         Alert.alert("Registration Closed", "This event is no longer accepting registrations"); return;
       }
       if (event.status.includes("Cost Bearing Event") && event.price_charged_via_app) {
-        Alert.alert("Payment Required", "Please visit the web app to complete payment for this event."); return;
+        setRegistering(false);
+        setShowPaymentDialog(true);
+        return;
       }
       const { data: freshCount } = await (supabase.from("event_registration_counts") as any)
         .select("confirmed_count").eq("event_id", id).maybeSingle();
@@ -395,6 +399,14 @@ export default function EventDetailScreen() {
     } finally {
       setSavingPlusOne(false);
     }
+  };
+
+  const handlePaymentSuccess = async () => {
+    // Refresh registration status after successful payment
+    await fetchRegistration();
+    await fetchRegistrationCount();
+    setIsRegistered(true);
+    setIsWaitingList(false);
   };
 
   // ─── Display helpers ──────────────────────────────────────────────────────
@@ -674,6 +686,19 @@ export default function EventDetailScreen() {
           <EventDescription description={event.description} />
         )}
       </ScrollView>
+
+      {/* QNB Payment Modal for Cost-Bearing Events */}
+      {event && event.price && event.currency && (
+        <QNBPaymentModal
+          open={showPaymentDialog}
+          onClose={() => setShowPaymentDialog(false)}
+          eventId={event.id}
+          eventTitle={event.title}
+          amount={event.price}
+          currency={event.currency}
+          onPaymentSuccess={handlePaymentSuccess}
+        />
+      )}
 
           </MobileLayout>
   );

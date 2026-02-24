@@ -17,6 +17,7 @@ import {
   BarChart3,
   DollarSign,
   Mail,
+  CreditCard,
   ChevronRight,
 } from "lucide-react-native";
 import { Colors } from "../../constants/Colors";
@@ -40,6 +41,7 @@ const ADMIN_LINKS: AdminLink[] = [
   { label: "Commitments", description: "Manage annual commitment settings", route: "/(admin)/commitments", icon: DollarSign, color: "#f97316" },
   { label: "Statistics", description: "Attendance verification & analytics", route: "/(admin)/statistics", icon: BarChart3, color: "#06b6d4" },
   { label: "Emails", description: "Create and send newsletters", route: "/(admin)/emails", icon: Mail, color: "#a855f7" },
+  { label: "Payments", description: "Payment provider and QNB POS settings", route: "/(admin)/payment", icon: CreditCard, color: "#ef4444" },
 ];
 
 export default function AdminPanelScreen() {

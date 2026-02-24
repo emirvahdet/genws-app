@@ -12,6 +12,7 @@ import { Award, Calendar, RefreshCw, XCircle, Users } from "lucide-react-native"
 import { supabase } from "../../lib/supabase";
 import { useViewAs } from "../../stores/ViewAsContext";
 import { Colors } from "../../constants/Colors";
+import { CommitmentCheckoutModal } from "../payment/CommitmentCheckoutModal";
 
 interface Commitment {
   id: string;
@@ -44,6 +45,8 @@ export const CommitmentSection = () => {
   const [cancelling, setCancelling] = useState(false);
   const [familyMembership, setFamilyMembership] = useState<FamilyMembership | null>(null);
   const [showCancelConfirm, setShowCancelConfirm] = useState(false);
+  const [showCheckout, setShowCheckout] = useState(false);
+  const [checkoutIsRenewal, setCheckoutIsRenewal] = useState(false);
 
   const fetchCommitment = useCallback(async () => {
     try {
@@ -163,12 +166,19 @@ export const CommitmentSection = () => {
     }
   };
 
-  const handleGetCommitted = async () => {
-    Alert.alert("Become a Member", "Please visit the web app to complete your membership payment.");
+  const handleGetCommitted = () => {
+    setCheckoutIsRenewal(false);
+    setShowCheckout(true);
   };
 
-  const handleRenewEarly = async () => {
-    Alert.alert("Renew Early", "Please visit the web app to renew your commitment.");
+  const handleRenewEarly = () => {
+    setCheckoutIsRenewal(true);
+    setShowCheckout(true);
+  };
+
+  const handleCheckoutSuccess = () => {
+    fetchCommitment();
+    fetchFamilyMembership();
   };
 
   if (loading) {
@@ -308,6 +318,16 @@ export const CommitmentSection = () => {
           </View>
         )}
       </View>
+
+      {/* Commitment Checkout Modal */}
+      <CommitmentCheckoutModal
+        open={showCheckout}
+        onClose={() => setShowCheckout(false)}
+        isRenewal={checkoutIsRenewal}
+        currentExpiryDate={commitment?.expiry_date}
+        onSuccess={handleCheckoutSuccess}
+        familyMembership={familyMembership}
+      />
 
       {/* Cancel Renewal Confirmation Modal */}
       <Modal visible={showCancelConfirm} transparent animationType="fade" onRequestClose={() => setShowCancelConfirm(false)}>

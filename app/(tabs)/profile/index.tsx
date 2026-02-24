@@ -16,7 +16,7 @@ import {
   MapPin, Lock, Eye, EyeOff, ChevronRight, Mail, Shield,
   HelpCircle, LogOut, Bell, Users, Calendar as CalendarIcon,
   Newspaper, LayoutDashboard, Send, Award, BarChart3, User,
-  BookOpen, Key,
+  BookOpen, Key, CreditCard,
 } from "lucide-react-native";
 import { supabase } from "../../../lib/supabase";
 import { useViewAs } from "../../../stores/ViewAsContext";
@@ -174,6 +174,7 @@ export default function ProfileScreen() {
     { icon: BarChart3, label: "Admin Statistics", action: () => router.push("/(admin)/statistics" as any) },
     { icon: LayoutDashboard, label: "Admin Dashboard", action: () => router.push("/(admin)/" as any) },
     { icon: Send, label: "Admin Emails", action: () => router.push("/(admin)/emails" as any) },
+    { icon: CreditCard, label: "Admin Payments", action: () => router.push("/(admin)/payment" as any) },
   ];
 
   const SETTINGS_SECTIONS = [
