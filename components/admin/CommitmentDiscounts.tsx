@@ -174,6 +174,12 @@ export function CommitmentDiscounts() {
   const toggleMember = (id: string) => setFormData((p) => ({ ...p, selectedMembers: p.selectedMembers.includes(id) ? p.selectedMembers.filter((x) => x !== id) : [...p.selectedMembers, id] }));
 
   const filteredMembers = members.filter((m) => m.full_name.toLowerCase().includes(memberSearch.toLowerCase()) || m.email.toLowerCase().includes(memberSearch.toLowerCase()));
+  const selectedMemberIds = new Set(formData.selectedMembers);
+  const selectedMemberItems = filteredMembers.filter((m) => selectedMemberIds.has(m.id));
+  const unselectedMemberItems = filteredMembers.filter((m) => !selectedMemberIds.has(m.id));
+  const memberLimit = 50;
+  const remainingSlots = Math.max(0, memberLimit - selectedMemberItems.length);
+  const orderedMemberItems = [...selectedMemberItems, ...unselectedMemberItems.slice(0, remainingSlots)];
 
   if (loading) return <ActivityIndicator size="small" color={Colors.primary} style={{ paddingVertical: 24 }} />;
 
@@ -229,7 +235,7 @@ export function CommitmentDiscounts() {
         <View style={{ flex: 1, backgroundColor: "rgba(0,0,0,0.5)", justifyContent: "flex-end" }}>
           <View style={{ backgroundColor: "white", borderTopLeftRadius: 24, borderTopRightRadius: 24, padding: 24, maxHeight: "85%" }}>
             <Text style={{ fontSize: 16, fontWeight: "700", color: Colors.foreground, marginBottom: 16 }}>{selectedDiscount ? "Edit Discount" : "Add Discount"}</Text>
-            <ScrollView showsVerticalScrollIndicator={false}>
+            <ScrollView showsVerticalScrollIndicator={false} nestedScrollEnabled={true}>
               {/* Name */}
               <View style={{ marginBottom: 10 }}>
                 <Text style={{ fontSize: 11, fontWeight: "600", color: Colors.mutedForeground, marginBottom: 3 }}>Discount Name *</Text>
@@ -291,23 +297,19 @@ export function CommitmentDiscounts() {
               {formData.target_type === "groups" && (
                 <View style={{ marginBottom: 10 }}>
                   <Text style={{ fontSize: 11, fontWeight: "600", color: Colors.mutedForeground, marginBottom: 6 }}>Select Groups *</Text>
-                  <View style={{ borderWidth: 1, borderColor: Colors.border, borderRadius: 10, maxHeight: 160 }}>
-                    <FlatList
-                      data={groups}
-                      keyExtractor={(item) => item.id}
-                      renderItem={({ item }) => (
-                        <Pressable onPress={() => toggleGroup(item.id)} style={{ flexDirection: "row", alignItems: "center", gap: 10, padding: 10, borderBottomWidth: 1, borderBottomColor: Colors.border + "33" }}>
-                          <View style={{ width: 18, height: 18, borderRadius: 4, borderWidth: 1.5, borderColor: formData.selectedGroups.includes(item.id) ? Colors.primary : Colors.border, backgroundColor: formData.selectedGroups.includes(item.id) ? Colors.primary : "white", alignItems: "center", justifyContent: "center" }}>
-                            {formData.selectedGroups.includes(item.id) && <Check size={12} color="white" />}
-                          </View>
-                          <View style={{ flexDirection: "row", alignItems: "center", gap: 6 }}>
-                            <Users size={14} color={Colors.mutedForeground} />
-                            <Text style={{ fontSize: 12, color: Colors.foreground }}>{item.name}</Text>
-                          </View>
-                        </Pressable>
-                      )}
-                    />
-                  </View>
+                  <ScrollView style={{ borderWidth: 1, borderColor: Colors.border, borderRadius: 10, maxHeight: 160 }} nestedScrollEnabled={true}>
+                    {groups.map((item) => (
+                      <Pressable key={item.id} onPress={() => toggleGroup(item.id)} style={{ flexDirection: "row", alignItems: "center", gap: 10, padding: 10, borderBottomWidth: 1, borderBottomColor: Colors.border + "33" }}>
+                        <View style={{ width: 18, height: 18, borderRadius: 4, borderWidth: 1.5, borderColor: formData.selectedGroups.includes(item.id) ? Colors.primary : Colors.border, backgroundColor: formData.selectedGroups.includes(item.id) ? Colors.primary : "white", alignItems: "center", justifyContent: "center" }}>
+                          {formData.selectedGroups.includes(item.id) && <Check size={12} color="white" />}
+                        </View>
+                        <View style={{ flexDirection: "row", alignItems: "center", gap: 6 }}>
+                          <Users size={14} color={Colors.mutedForeground} />
+                          <Text style={{ fontSize: 12, color: Colors.foreground }}>{item.name}</Text>
+                        </View>
+                      </Pressable>
+                    ))}
+                  </ScrollView>
                 </View>
               )}
 
@@ -319,23 +321,19 @@ export function CommitmentDiscounts() {
                     <Search size={14} color={Colors.mutedForeground} />
                     <TextInput style={{ flex: 1, paddingVertical: 7, paddingLeft: 6, fontSize: 12, color: Colors.foreground }} placeholder="Search..." placeholderTextColor={Colors.mutedForeground} value={memberSearch} onChangeText={setMemberSearch} />
                   </View>
-                  <View style={{ borderWidth: 1, borderColor: Colors.border, borderRadius: 10, maxHeight: 160 }}>
-                    <FlatList
-                      data={filteredMembers.slice(0, 50)}
-                      keyExtractor={(item) => item.id}
-                      renderItem={({ item }) => (
-                        <Pressable onPress={() => toggleMember(item.id)} style={{ flexDirection: "row", alignItems: "center", gap: 10, padding: 10, borderBottomWidth: 1, borderBottomColor: Colors.border + "33" }}>
-                          <View style={{ width: 18, height: 18, borderRadius: 4, borderWidth: 1.5, borderColor: formData.selectedMembers.includes(item.id) ? Colors.primary : Colors.border, backgroundColor: formData.selectedMembers.includes(item.id) ? Colors.primary : "white", alignItems: "center", justifyContent: "center" }}>
-                            {formData.selectedMembers.includes(item.id) && <Check size={12} color="white" />}
-                          </View>
-                          <View style={{ flex: 1 }}>
-                            <Text style={{ fontSize: 12, fontWeight: "500" }}>{item.full_name}</Text>
-                            <Text style={{ fontSize: 10, color: Colors.mutedForeground }}>{item.email}</Text>
-                          </View>
-                        </Pressable>
-                      )}
-                    />
-                  </View>
+                  <ScrollView style={{ borderWidth: 1, borderColor: Colors.border, borderRadius: 10, maxHeight: 160 }} nestedScrollEnabled={true}>
+                    {orderedMemberItems.map((item) => (
+                      <Pressable key={item.id} onPress={() => toggleMember(item.id)} style={{ flexDirection: "row", alignItems: "center", gap: 10, padding: 10, borderBottomWidth: 1, borderBottomColor: Colors.border + "33" }}>
+                        <View style={{ width: 18, height: 18, borderRadius: 4, borderWidth: 1.5, borderColor: formData.selectedMembers.includes(item.id) ? Colors.primary : Colors.border, backgroundColor: formData.selectedMembers.includes(item.id) ? Colors.primary : "white", alignItems: "center", justifyContent: "center" }}>
+                          {formData.selectedMembers.includes(item.id) && <Check size={12} color="white" />}
+                        </View>
+                        <View style={{ flex: 1 }}>
+                          <Text style={{ fontSize: 12, fontWeight: "500" }}>{item.full_name}</Text>
+                          <Text style={{ fontSize: 10, color: Colors.mutedForeground }}>{item.email}</Text>
+                        </View>
+                      </Pressable>
+                    ))}
+                  </ScrollView>
                   {formData.selectedMembers.length > 0 && <Text style={{ fontSize: 10, color: Colors.mutedForeground, marginTop: 4 }}>{formData.selectedMembers.length} member(s) selected</Text>}
                 </View>
               )}
