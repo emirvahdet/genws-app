@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { View, Text, Pressable, Modal, Platform, Alert } from "react-native";
 import DateTimePicker from "@react-native-community/datetimepicker";
-import { Calendar, Clock } from "lucide-react-native";
+import { Calendar, Clock, X } from "lucide-react-native";
 import { Colors } from "../../constants/Colors";
 
 interface DateTimePickerProps {
@@ -15,6 +15,7 @@ interface DateTimePickerProps {
 export function DateTimePickerComponent({ label, value, onChange, placeholder, required }: DateTimePickerProps) {
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [showTimePicker, setShowTimePicker] = useState(false);
+  const [tempDate, setTempDate] = useState<Date | null>(null);
   
   const parseDateTime = (dateTimeString: string) => {
     if (!dateTimeString) {
@@ -56,32 +57,63 @@ export function DateTimePickerComponent({ label, value, onChange, placeholder, r
   }, [value]);
 
   const handleDateChange = (event: any, selectedDate?: Date) => {
-    setShowDatePicker(false);
+    // Don't close the picker, just update the temporary date
     if (selectedDate) {
       // Keep the time from current date, update only date part
       const newDateTime = new Date(selectedDate);
       newDateTime.setHours(currentDate.getHours());
       newDateTime.setMinutes(currentDate.getMinutes());
-      onChange(formatDateTime(newDateTime));
-      // Show time picker after date selection
-      if (Platform.OS === 'ios') {
-        setTimeout(() => setShowTimePicker(true), 100);
-      } else {
-        // Android: show time picker immediately
-        setTimeout(() => setShowTimePicker(true), 100);
-      }
+      setTempDate(newDateTime);
     }
   };
 
   const handleTimeChange = (event: any, selectedTime?: Date) => {
-    setShowTimePicker(false);
+    // Don't close the picker, just update the temporary date
     if (selectedTime) {
       // Keep the date from current date, update only time part
       const newDateTime = new Date(currentDate);
       newDateTime.setHours(selectedTime.getHours());
       newDateTime.setMinutes(selectedTime.getMinutes());
-      onChange(formatDateTime(newDateTime));
+      setTempDate(newDateTime);
     }
+  };
+
+  const handleSaveDate = () => {
+    setShowDatePicker(false);
+    if (tempDate) {
+      onChange(formatDateTime(tempDate));
+    }
+    setTempDate(null);
+    // Show time picker after date selection
+    if (Platform.OS === 'ios') {
+      setTimeout(() => setShowTimePicker(true), 100);
+    } else {
+      // Android: show time picker immediately
+      setTimeout(() => setShowTimePicker(true), 100);
+    }
+  };
+
+  const handleSaveTime = () => {
+    setShowTimePicker(false);
+    if (tempDate) {
+      onChange(formatDateTime(tempDate));
+    }
+    setTempDate(null);
+  };
+
+  const handleCancelDate = () => {
+    setShowDatePicker(false);
+    setTempDate(null);
+  };
+
+  const handleCancelTime = () => {
+    setShowTimePicker(false);
+    setTempDate(null);
+  };
+
+  const handleOpen = () => {
+    setTempDate(currentDate);
+    setShowDatePicker(true);
   };
 
   const displayText = value ? 
@@ -96,12 +128,12 @@ export function DateTimePickerComponent({ label, value, onChange, placeholder, r
         "What would you like to do?",
         [
           { text: "Clear", style: "destructive", onPress: () => onChange("") },
-          { text: "Change", style: "default", onPress: () => setShowDatePicker(true) },
+          { text: "Change", style: "default", onPress: handleOpen },
           { text: "Cancel", style: "cancel" }
         ]
       );
     } else {
-      setShowDatePicker(true);
+      handleOpen();
     }
   };
 
@@ -142,23 +174,25 @@ export function DateTimePickerComponent({ label, value, onChange, placeholder, r
         >
           <View style={{ flex: 1, backgroundColor: "rgba(0,0,0,0.5)", justifyContent: "flex-end" }}>
             <View style={{ backgroundColor: "white", borderTopLeftRadius: 16, borderTopRightRadius: 16, padding: 20 }}>
-              <Text style={{ fontSize: 16, fontWeight: "600", color: Colors.foreground, marginBottom: 16 }}>
-                Select Date
-              </Text>
+              <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", marginBottom: 16 }}>
+                <Pressable onPress={handleCancelDate} style={{ padding: 8 }}>
+                  <X size={20} color={Colors.mutedForeground} />
+                </Pressable>
+                <Text style={{ fontSize: 16, fontWeight: "600", color: Colors.foreground }}>
+                  Select Date
+                </Text>
+                <Pressable onPress={handleSaveDate} style={{ padding: 8, paddingHorizontal: 12, backgroundColor: Colors.primary, borderRadius: 6 }}>
+                  <Text style={{ color: "white", fontWeight: "600", fontSize: 14 }}>Next</Text>
+                </Pressable>
+              </View>
               <DateTimePicker
-                value={currentDate}
+                value={tempDate || currentDate}
                 mode="date"
                 display="spinner"
                 onChange={handleDateChange}
                 minimumDate={new Date()}
                 style={{ marginBottom: 16 }}
               />
-              <Pressable
-                onPress={() => setShowDatePicker(false)}
-                style={{ padding: 12, alignItems: "center", backgroundColor: Colors.muted, borderRadius: 8 }}
-              >
-                <Text style={{ color: Colors.foreground, fontWeight: "500" }}>Cancel</Text>
-              </Pressable>
             </View>
           </View>
         </Modal>
@@ -174,22 +208,24 @@ export function DateTimePickerComponent({ label, value, onChange, placeholder, r
         >
           <View style={{ flex: 1, backgroundColor: "rgba(0,0,0,0.5)", justifyContent: "flex-end" }}>
             <View style={{ backgroundColor: "white", borderTopLeftRadius: 16, borderTopRightRadius: 16, padding: 20 }}>
-              <Text style={{ fontSize: 16, fontWeight: "600", color: Colors.foreground, marginBottom: 16 }}>
-                Select Time
-              </Text>
+              <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", marginBottom: 16 }}>
+                <Pressable onPress={handleCancelTime} style={{ padding: 8 }}>
+                  <X size={20} color={Colors.mutedForeground} />
+                </Pressable>
+                <Text style={{ fontSize: 16, fontWeight: "600", color: Colors.foreground }}>
+                  Select Time
+                </Text>
+                <Pressable onPress={handleSaveTime} style={{ padding: 8, paddingHorizontal: 12, backgroundColor: Colors.primary, borderRadius: 6 }}>
+                  <Text style={{ color: "white", fontWeight: "600", fontSize: 14 }}>Save</Text>
+                </Pressable>
+              </View>
               <DateTimePicker
-                value={currentDate}
+                value={tempDate || currentDate}
                 mode="time"
                 display="spinner"
                 onChange={handleTimeChange}
                 style={{ marginBottom: 16 }}
               />
-              <Pressable
-                onPress={() => setShowTimePicker(false)}
-                style={{ padding: 12, alignItems: "center", backgroundColor: Colors.muted, borderRadius: 8 }}
-              >
-                <Text style={{ color: Colors.foreground, fontWeight: "500" }}>Cancel</Text>
-              </Pressable>
             </View>
           </View>
         </Modal>

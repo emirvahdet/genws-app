@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { View, Text, Pressable, Modal } from "react-native";
 import DateTimePicker from "@react-native-community/datetimepicker";
-import { Calendar } from "lucide-react-native";
+import { Calendar, X } from "lucide-react-native";
 import { Colors } from "../../constants/Colors";
 
 interface DatePickerProps {
@@ -26,6 +26,7 @@ export function DatePicker({
   maximumDate 
 }: DatePickerProps) {
   const [showPicker, setShowPicker] = useState(false);
+  const [tempDate, setTempDate] = useState<Date | null>(null);
 
   const parseDate = (dateString: string) => {
     if (!dateString) {
@@ -48,11 +49,29 @@ export function DatePicker({
 
   const currentDate = parseDate(value);
 
-  const handleChange = (event: any, selectedDate?: Date) => {
-    setShowPicker(false);
+  const handlePickerChange = (event: any, selectedDate?: Date) => {
+    // Don't close the picker, just update the temporary date
     if (selectedDate) {
-      onChange(formatDate(selectedDate));
+      setTempDate(selectedDate);
     }
+  };
+
+  const handleSave = () => {
+    setShowPicker(false);
+    if (tempDate) {
+      onChange(formatDate(tempDate));
+    }
+    setTempDate(null);
+  };
+
+  const handleCancel = () => {
+    setShowPicker(false);
+    setTempDate(null);
+  };
+
+  const handleOpen = () => {
+    setTempDate(currentDate);
+    setShowPicker(true);
   };
 
   const displayText = value
@@ -66,7 +85,7 @@ export function DatePicker({
       </Text>
 
       <Pressable
-        onPress={() => setShowPicker(true)}
+        onPress={handleOpen}
         style={{
           flexDirection: "row",
           alignItems: "center",
@@ -100,24 +119,26 @@ export function DatePicker({
         >
           <View style={{ flex: 1, backgroundColor: "rgba(0,0,0,0.5)", justifyContent: "flex-end" }}>
             <View style={{ backgroundColor: "white", borderTopLeftRadius: 16, borderTopRightRadius: 16, padding: 20 }}>
-              <Text style={{ fontSize: 16, fontWeight: "600", color: Colors.foreground, marginBottom: 16 }}>
-                Select Date
-              </Text>
+              <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", marginBottom: 16 }}>
+                <Pressable onPress={handleCancel} style={{ padding: 8 }}>
+                  <X size={20} color={Colors.mutedForeground} />
+                </Pressable>
+                <Text style={{ fontSize: 16, fontWeight: "600", color: Colors.foreground }}>
+                  Select Date
+                </Text>
+                <Pressable onPress={handleSave} style={{ padding: 8, paddingHorizontal: 12, backgroundColor: Colors.primary, borderRadius: 6 }}>
+                  <Text style={{ color: "white", fontWeight: "600", fontSize: 14 }}>Save</Text>
+                </Pressable>
+              </View>
               <DateTimePicker
-                value={currentDate}
+                value={tempDate || currentDate}
                 mode="date"
                 display="spinner"
-                onChange={handleChange}
+                onChange={handlePickerChange}
                 minimumDate={minimumDate}
                 maximumDate={maximumDate}
                 style={{ marginBottom: 16 }}
               />
-              <Pressable
-                onPress={() => setShowPicker(false)}
-                style={{ padding: 12, alignItems: "center", backgroundColor: Colors.muted, borderRadius: 8 }}
-              >
-                <Text style={{ color: Colors.foreground, fontWeight: "500" }}>Cancel</Text>
-              </Pressable>
             </View>
           </View>
         </Modal>
