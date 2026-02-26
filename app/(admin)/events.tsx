@@ -28,6 +28,7 @@ import { EventAttendees } from "../../components/admin/EventAttendees";
 import { RichTextEditor } from "../../components/admin/RichTextEditor";
 import { DateTimePickerComponent } from "../../components/admin/DateTimePicker";
 import { DatePicker } from "../../components/ui/DatePicker";
+import { CountryPicker } from "../../components/ui/CountryPicker";
 
 // EditField component - moved outside to prevent re-renders
 const EF = ({ label, value, onChangeText, placeholder, multiline, keyboardType, hint }: any) => (
@@ -436,7 +437,7 @@ return (
               <EF label="Location *" value={formData.location} onChangeText={(t: string) => setFormData((p) => ({ ...p, location: t }))} />
               <View style={{ flexDirection: "row", gap: 8 }}>
                 <View style={{ flex: 1 }}><EF label="City" value={formData.city} onChangeText={(t: string) => setFormData((p) => ({ ...p, city: t }))} /></View>
-                <View style={{ flex: 1 }}><EF label="Country" value={formData.country} onChangeText={(t: string) => setFormData((p) => ({ ...p, country: t }))} /></View>
+                <View style={{ flex: 1 }}><CountryPicker label="Country" value={formData.country} onChange={(t: string) => setFormData((p) => ({ ...p, country: t }))} /></View>
               </View>
               <EF label="Coordinates" value={formData.coordinates} onChangeText={(t: string) => setFormData((p) => ({ ...p, coordinates: t }))} placeholder="41.066551, 29.018055" hint="Leave empty for approximate location" />
               <DateTimePickerComponent

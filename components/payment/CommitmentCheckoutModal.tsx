@@ -26,6 +26,7 @@ import {
 import { format, addYears, subDays } from "date-fns";
 import { supabase } from "../../lib/supabase";
 import { Colors } from "../../constants/Colors";
+import { CountryPicker } from "../ui/CountryPicker";
 
 interface BillingInfo {
   name: string;
@@ -658,8 +659,6 @@ export const CommitmentCheckoutModal = ({
           {[
             { label: "Name", key: "name" as const },
             { label: "Email", key: "email" as const },
-            { label: "Country", key: "country" as const },
-            { label: "Address", key: "address" as const },
           ].map((field) => (
             <View key={field.key}>
               <Text style={{ fontSize: 12, color: Colors.mutedForeground, marginBottom: 4 }}>{field.label}</Text>
@@ -673,6 +672,21 @@ export const CommitmentCheckoutModal = ({
               />
             </View>
           ))}
+          <CountryPicker
+            label="Country"
+            value={billingInfo.country}
+            onChange={(v) => setBillingInfo({ ...billingInfo, country: v })}
+            placeholder="Select country"
+          />
+          <View>
+            <Text style={{ fontSize: 12, color: Colors.mutedForeground, marginBottom: 4 }}>Address</Text>
+            <TextInput
+              style={{ backgroundColor: Colors.input, borderWidth: 1, borderColor: Colors.border, borderRadius: 10, padding: 10, fontSize: 14, color: Colors.foreground }}
+              value={billingInfo.address}
+              onChangeText={(v) => setBillingInfo({ ...billingInfo, address: v })}
+              placeholderTextColor={Colors.mutedForeground}
+            />
+          </View>
         </View>
       ) : (
         <View style={{ backgroundColor: Colors.muted + "80", borderRadius: 10, padding: 12, gap: 4 }}>

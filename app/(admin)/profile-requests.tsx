@@ -15,6 +15,7 @@ import { useRouter } from "expo-router";
 import { ArrowLeft, CheckCircle, XCircle, Clock, User } from "lucide-react-native";
 import { supabase } from "../../lib/supabase";
 import { Colors } from "../../constants/Colors";
+import { CountryPicker } from "../../components/ui/CountryPicker";
 
 interface ProfileUpdateRequest {
   id: string;
@@ -288,7 +289,7 @@ export default function AdminProfileRequestsScreen() {
                   <Field label="City" value={editedData.city || ""} onChangeText={(t) => setEditedData((p: any) => ({ ...p, city: t }))} />
                 </View>
                 <View style={{ flex: 1 }}>
-                  <Field label="Country" value={editedData.country || ""} onChangeText={(t) => setEditedData((p: any) => ({ ...p, country: t }))} />
+                  <CountryPicker label="Country" value={editedData.country || ""} onChange={(t) => setEditedData((p: any) => ({ ...p, country: t }))} />
                 </View>
               </View>
               <View style={{ flexDirection: "row", gap: 10 }}>

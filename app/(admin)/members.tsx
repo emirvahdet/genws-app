@@ -27,6 +27,7 @@ import {
 import { supabase } from "../../lib/supabase";
 import { Colors } from "../../constants/Colors";
 import { useViewAs } from "../../stores/ViewAsContext";
+import { CountryPicker } from "../../components/ui/CountryPicker";
 
 const countries = [
   "Türkiye","United Kingdom","United States","UAE","Germany","France","Italy","Spain",
@@ -601,7 +602,7 @@ export default function AdminMembersScreen() {
               <EF label="Generation Number" value={editForm.generationNumber} onChangeText={(t: string) => setEditForm((p) => ({ ...p, generationNumber: t }))} keyboardType="numeric" />
               <View style={{ flexDirection: "row", gap: 8 }}>
                 <View style={{ flex: 1 }}><EF label="City" value={editForm.city} onChangeText={(t: string) => setEditForm((p) => ({ ...p, city: t }))} /></View>
-                <View style={{ flex: 1 }}><EF label="Country" value={editForm.country} onChangeText={(t: string) => setEditForm((p) => ({ ...p, country: t }))} /></View>
+                <View style={{ flex: 1 }}><CountryPicker label="Country" value={editForm.country} onChange={(t: string) => setEditForm((p) => ({ ...p, country: t }))} /></View>
               </View>
               <EF label="Bio" value={editForm.bio} onChangeText={(t: string) => setEditForm((p) => ({ ...p, bio: t }))} multiline />
               <EF label="Areas of Interest" value={editForm.interests} onChangeText={(t: string) => setEditForm((p) => ({ ...p, interests: t }))} multiline hint="Comma-separated" />

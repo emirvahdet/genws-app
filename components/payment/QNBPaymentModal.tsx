@@ -22,6 +22,7 @@ import {
 } from "lucide-react-native";
 import { supabase } from "../../lib/supabase";
 import { Colors } from "../../constants/Colors";
+import { CountryPicker } from "../ui/CountryPicker";
 
 interface BillingInfo {
   name: string;
@@ -667,34 +668,14 @@ export const QNBPaymentModal = ({
                 />
               </View>
 
-              <View>
-                <Text
-                  style={{
-                    fontSize: 12,
-                    color: Colors.mutedForeground,
-                    marginBottom: 4,
-                  }}
-                >
-                  Country
-                </Text>
-                <TextInput
-                  style={{
-                    backgroundColor: Colors.input,
-                    borderWidth: 1,
-                    borderColor: Colors.border,
-                    borderRadius: 10,
-                    padding: 10,
-                    fontSize: 14,
-                    color: Colors.foreground,
-                  }}
-                  value={billingInfo.country}
-                  onChangeText={(v) =>
-                    setBillingInfo({ ...billingInfo, country: v })
-                  }
-                  placeholder="Country"
-                  placeholderTextColor={Colors.mutedForeground}
-                />
-              </View>
+              <CountryPicker
+                label="Country"
+                value={billingInfo.country}
+                onChange={(v) =>
+                  setBillingInfo({ ...billingInfo, country: v })
+                }
+                placeholder="Select country"
+              />
 
               <View>
                 <Text
