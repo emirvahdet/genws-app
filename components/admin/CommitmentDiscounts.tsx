@@ -14,6 +14,7 @@ import {
 import { Percent, Plus, Trash2, Edit, Check, Users, User, Search } from "lucide-react-native";
 import { supabase } from "../../lib/supabase";
 import { Colors } from "../../constants/Colors";
+import { DatePicker } from "../ui/DatePicker";
 
 interface Discount {
   id: string;
@@ -284,12 +285,10 @@ export function CommitmentDiscounts() {
               {/* Validity */}
               <View style={{ flexDirection: "row", gap: 8, marginBottom: 10 }}>
                 <View style={{ flex: 1 }}>
-                  <Text style={{ fontSize: 11, fontWeight: "600", color: Colors.mutedForeground, marginBottom: 3 }}>Valid From</Text>
-                  <TextInput style={{ backgroundColor: Colors.input, borderWidth: 1, borderColor: Colors.border, borderRadius: 10, padding: 9, fontSize: 12, color: Colors.foreground }} value={formData.valid_from} onChangeText={(t) => setFormData((p) => ({ ...p, valid_from: t }))} placeholder="YYYY-MM-DD" placeholderTextColor={Colors.mutedForeground} />
+                  <DatePicker label="Valid From" value={formData.valid_from} onChange={(t) => setFormData((p) => ({ ...p, valid_from: t }))} placeholder="Select start date" />
                 </View>
                 <View style={{ flex: 1 }}>
-                  <Text style={{ fontSize: 11, fontWeight: "600", color: Colors.mutedForeground, marginBottom: 3 }}>Valid Until</Text>
-                  <TextInput style={{ backgroundColor: Colors.input, borderWidth: 1, borderColor: Colors.border, borderRadius: 10, padding: 9, fontSize: 12, color: Colors.foreground }} value={formData.valid_until} onChangeText={(t) => setFormData((p) => ({ ...p, valid_until: t }))} placeholder="YYYY-MM-DD" placeholderTextColor={Colors.mutedForeground} />
+                  <DatePicker label="Valid Until" value={formData.valid_until} onChange={(t) => setFormData((p) => ({ ...p, valid_until: t }))} placeholder="Select end date" />
                 </View>
               </View>
 

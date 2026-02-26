@@ -27,6 +27,7 @@ import { Colors } from "../../constants/Colors";
 import { EventAttendees } from "../../components/admin/EventAttendees";
 import { RichTextEditor } from "../../components/admin/RichTextEditor";
 import { DateTimePickerComponent } from "../../components/admin/DateTimePicker";
+import { DatePicker } from "../../components/ui/DatePicker";
 
 // EditField component - moved outside to prevent re-renders
 const EF = ({ label, value, onChangeText, placeholder, multiline, keyboardType, hint }: any) => (
@@ -551,7 +552,7 @@ return (
                     <Text style={{ fontSize: 10, color: Colors.mutedForeground, marginBottom: 10 }}>{selectedMembers.size} member{selectedMembers.size !== 1 ? "s" : ""} selected</Text>
 
                     {/* RSVP Date */}
-                    <EF label="RSVP Date" value={formData.rsvp_date} onChangeText={(t: string) => setFormData((p) => ({ ...p, rsvp_date: t }))} placeholder="YYYY-MM-DD" hint="Date by which invited members must respond" />
+                    <DatePicker label="RSVP Date" value={formData.rsvp_date} onChange={(t: string) => setFormData((p) => ({ ...p, rsvp_date: t }))} placeholder="Select RSVP deadline" hint="Date by which invited members must respond" />
                   </View>
                 )}
               </View>

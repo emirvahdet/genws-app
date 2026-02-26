@@ -148,7 +148,7 @@ export function DateTimePickerComponent({ label, value, onChange, placeholder, r
               <DateTimePicker
                 value={currentDate}
                 mode="date"
-                display="default"
+                display="spinner"
                 onChange={handleDateChange}
                 minimumDate={new Date()}
                 style={{ marginBottom: 16 }}
@@ -180,7 +180,7 @@ export function DateTimePickerComponent({ label, value, onChange, placeholder, r
               <DateTimePicker
                 value={currentDate}
                 mode="time"
-                display="default"
+                display="spinner"
                 onChange={handleTimeChange}
                 style={{ marginBottom: 16 }}
               />

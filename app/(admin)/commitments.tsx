@@ -35,6 +35,7 @@ import { supabase } from "../../lib/supabase";
 import { Colors } from "../../constants/Colors";
 import { CommitmentDiscounts } from "../../components/admin/CommitmentDiscounts";
 import { FamilyMemberships } from "../../components/admin/FamilyMemberships";
+import { DatePicker } from "../../components/ui/DatePicker";
 
 interface CommitmentWithProfile {
   id: string;
@@ -727,8 +728,8 @@ export default function AdminCommitmentsScreen() {
               )}
 
               <EF label="Amount Paid (USD)" value={amountPaidUsd} onChangeText={setAmountPaidUsd} placeholder={`Leave empty for default: $${annualFee}`} keyboardType="decimal-pad" hint={`Leave empty to use current price ($${annualFee})`} />
-              <EF label="Payment Date *" value={paymentDate} onChangeText={setPaymentDate} placeholder="YYYY-MM-DD" hint="Exchange rate from this date will be used" />
-              <EF label="Commitment Start Date *" value={startDate} onChangeText={setStartDate} placeholder="YYYY-MM-DD" hint="Commitment expires 1 year from this date" />
+              <DatePicker label="Payment Date" value={paymentDate} onChange={setPaymentDate} placeholder="Select payment date" hint="Exchange rate from this date will be used" required />
+              <DatePicker label="Commitment Start Date" value={startDate} onChange={setStartDate} placeholder="Select start date" hint="Commitment expires 1 year from this date" required />
 
               {calculatedTryAmount !== null && exchangeRate !== null && (
                 <View style={{ backgroundColor: Colors.muted, borderRadius: 10, padding: 12, marginBottom: 12 }}>
