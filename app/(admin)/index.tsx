@@ -18,6 +18,7 @@ import {
   DollarSign,
   Mail,
   CreditCard,
+  Bell,
   ChevronRight,
 } from "lucide-react-native";
 import { Colors } from "../../constants/Colors";
@@ -34,6 +35,7 @@ const ADMIN_LINKS: AdminLink[] = [
   { label: "Members", description: "Create, edit, and manage members", route: "/(admin)/members", icon: Users, color: "#6366f1" },
   { label: "Events", description: "Create and manage events", route: "/(admin)/events", icon: CalendarDays, color: "#0ea5e9" },
   { label: "News", description: "Manage news articles and content", route: "/(admin)/news", icon: Newspaper, color: "#f59e0b" },
+  { label: "Notifications", description: "Send push notifications to members", route: "/(admin)/notifications", icon: Bell, color: "#22c55e" },
   { label: "Profile Requests", description: "Review member profile update requests", route: "/(admin)/profile-requests", icon: FileEdit, color: "#8b5cf6" },
   { label: "Groups", description: "Create and manage member groups", route: "/(admin)/groups", icon: FolderOpen, color: "#10b981" },
   { label: "Updates", description: "Manage app updates and announcements", route: "/(admin)/updates", icon: MessageSquare, color: "#ec4899" },

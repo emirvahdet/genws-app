@@ -7,6 +7,7 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import { queryClient } from "../lib/queryClient";
 import { useAuth } from "../hooks/useAuth";
 import { useBiometrics } from "../hooks/useBiometrics";
+import { useNotifications } from "../hooks/useNotifications";
 import { ViewAsProvider, useViewAs } from "../stores/ViewAsContext";
 import { ViewAsBanner } from "../components/admin/ViewAsBanner";
 import { supabase } from "../lib/supabase";
@@ -15,6 +16,9 @@ function AuthGate() {
   const { session, isLoading, mustResetPassword, signIn } = useAuth();
   const { isViewingAs } = useViewAs();
   const { isEnabled, authenticateWithBiometrics } = useBiometrics();
+  
+  // Initialize push notifications for authenticated users
+  useNotifications(session?.user?.id);
   const router = useRouter();
   const segments = useSegments();
   const [onboardingChecked, setOnboardingChecked] = useState(false);

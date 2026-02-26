@@ -203,10 +203,10 @@ export const CommitmentSection = () => {
 
         {isNonPrimaryFamilyMember ? (
           <View style={{ gap: 12 }}>
-            <View style={{ backgroundColor: Colors.primary + "0D", borderWidth: 1, borderColor: Colors.primary + "33", borderRadius: 12, padding: 16 }}>
+            <View style={{ backgroundColor: 'rgba(27, 59, 47, 0.05)', borderWidth: 1, borderColor: 'rgba(27, 59, 47, 0.2)', borderRadius: 12, padding: 16 }}>
               <View style={{ flexDirection: "row", alignItems: "center", gap: 8, marginBottom: 8 }}>
                 <Users size={16} color={Colors.primary} />
-                <View style={{ backgroundColor: Colors.primary + "33", borderRadius: 999, paddingHorizontal: 8, paddingVertical: 2 }}>
+                <View style={{ backgroundColor: 'rgba(27, 59, 47, 0.2)', borderRadius: 999, paddingHorizontal: 8, paddingVertical: 2 }}>
                   <Text style={{ fontSize: 12, color: Colors.primary, fontWeight: "600" }}>Family Member</Text>
                 </View>
               </View>
@@ -228,9 +228,9 @@ export const CommitmentSection = () => {
           </View>
         ) : isActive ? (
           <View style={{ gap: 12 }}>
-            <View style={{ backgroundColor: Colors.primary + "0D", borderWidth: 1, borderColor: Colors.primary + "33", borderRadius: 12, padding: 16 }}>
+            <View style={{ backgroundColor: 'rgba(27, 59, 47, 0.05)', borderWidth: 1, borderColor: 'rgba(27, 59, 47, 0.2)', borderRadius: 12, padding: 16 }}>
               <View style={{ flexDirection: "row", alignItems: "center", gap: 8, marginBottom: 8 }}>
-                <View style={{ backgroundColor: Colors.primary + "33", borderRadius: 999, paddingHorizontal: 8, paddingVertical: 2 }}>
+                <View style={{ backgroundColor: 'rgba(27, 59, 47, 0.2)', borderRadius: 999, paddingHorizontal: 8, paddingVertical: 2 }}>
                   <Text style={{ fontSize: 12, color: Colors.primary, fontWeight: "600" }}>Active</Text>
                 </View>
                 {commitment!.auto_renew && (

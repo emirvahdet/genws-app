@@ -16,7 +16,7 @@ import {
   MapPin, Lock, Eye, EyeOff, ChevronRight, Mail, Shield,
   HelpCircle, LogOut, Bell, Users, Calendar as CalendarIcon,
   Newspaper, LayoutDashboard, Send, Award, BarChart3, User,
-  BookOpen, Key, CreditCard,
+  BookOpen, Key, CreditCard, Volume2, Megaphone,
 } from "lucide-react-native";
 import { supabase } from "../../../lib/supabase";
 import { useViewAs } from "../../../stores/ViewAsContext";
@@ -169,6 +169,7 @@ export default function ProfileScreen() {
     { icon: Users, label: "Admin Groups", action: () => router.push("/(admin)/groups" as any) },
     { icon: Newspaper, label: "Admin-News", action: () => router.push("/(admin)/news" as any) },
     { icon: Bell, label: "Admin-Updates", action: () => router.push("/(admin)/updates" as any) },
+    { icon: Megaphone, label: "Admin Notifications", action: () => router.push("/(admin)/notifications" as any) },
     { icon: Mail, label: "Admin-Forms", action: () => router.push("/(admin)/forms" as any) },
     { icon: Award, label: "Admin-Commitments", action: () => router.push("/(admin)/commitments" as any) },
     { icon: BarChart3, label: "Admin Statistics", action: () => router.push("/(admin)/statistics" as any) },
