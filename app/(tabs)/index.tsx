@@ -18,6 +18,7 @@ import { AttendanceBarcodeModal } from "../../components/dashboard/AttendanceBar
 import NetworkingModal from "../../components/dashboard/NetworkingModal";
 import { useDashboard } from "../../hooks/useDashboard";
 import { Colors } from "../../constants/Colors";
+import { OfflineBanner } from "../../components/ui/OfflineBanner";
 
 const ITEMS_PER_PAGE = 5;
 
@@ -42,7 +43,7 @@ export default function DashboardScreen() {
   const {
     userName, updates, events, registrations,
     loading, refreshing, liveNetworkingEvents, currentUserId,
-    fetchAll, onRefresh, submitFeedback,
+    fetchAll, onRefresh, submitFeedback, isOffline,
   } = useDashboard();
 
   const [selectedUpdate, setSelectedUpdate] = useState<typeof updates[0] | null>(null);
@@ -120,6 +121,7 @@ export default function DashboardScreen() {
 
   return (
     <MobileLayout>
+      <OfflineBanner visible={isOffline} />
       <ScrollView
         style={{ flex: 1, backgroundColor: Colors.background }}
         contentContainerStyle={{ padding: 16, paddingBottom: 32 }}

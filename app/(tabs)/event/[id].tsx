@@ -14,7 +14,7 @@ import {
 import { Image } from "expo-image";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { LinearGradient } from "expo-linear-gradient";
-import { ArrowLeft, Check, Share2 } from "lucide-react-native";
+import { ArrowLeft, Check, Share2, ScanLine, Users } from "lucide-react-native";
 import * as Haptics from "expo-haptics";
 import RenderHtml from "react-native-render-html";
 import { supabase } from "../../../lib/supabase";
@@ -22,6 +22,8 @@ import { Colors } from "../../../constants/Colors";
 import { EventRegButton } from "../../../components/events/EventRegButton";
 import { MobileLayout } from "../../../components/layout/MobileLayout";
 import { QNBPaymentModal } from "../../../components/payment/QNBPaymentModal";
+import { AttendanceQRModal } from "../../../components/events/AttendanceQRModal";
+import { EventAttendeesModal } from "../../../components/events/EventAttendeesModal";
 
 interface Event {
   id: string;
@@ -119,6 +121,10 @@ export default function EventDetailScreen() {
   const [hasVerifiedAttendance, setHasVerifiedAttendance] = useState(false);
   const [registering, setRegistering] = useState(false);
   const [showPaymentDialog, setShowPaymentDialog] = useState(false);
+  const [showAttendanceQR, setShowAttendanceQR] = useState(false);
+  const [currentUserName, setCurrentUserName] = useState("");
+  const [currentUserMemberId, setCurrentUserMemberId] = useState<string | undefined>();
+  const [showGuestList, setShowGuestList] = useState(false);
   
   // +1 guest state
   const [plusOneGuest, setPlusOneGuest] = useState<{ name: string; email: string } | null>(null);
@@ -207,7 +213,19 @@ export default function EventDetailScreen() {
   const checkUser = useCallback(async () => {
     try {
       const { data: { user } } = await supabase.auth.getUser();
-      if (user) setCurrentUserId(user.id);
+      if (user) {
+        setCurrentUserId(user.id);
+        // Fetch user profile for QR modal
+        const { data: profile } = await supabase
+          .from("profiles")
+          .select("full_name, batch_number")
+          .eq("id", user.id)
+          .single();
+        if (profile) {
+          setCurrentUserName(profile.full_name || "");
+          setCurrentUserMemberId(profile.batch_number);
+        }
+      }
     } catch {}
   }, []);
 
@@ -701,7 +719,49 @@ export default function EventDetailScreen() {
             </View>
           )}
 
-          
+          {/* Show Attendance QR for registered attendees who haven't been verified */}
+          {currentUserId && isRegistered && !isWaitingList && !hasVerifiedAttendance && (() => {
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            const eventStart = new Date(event.start_date);
+            eventStart.setHours(0, 0, 0, 0);
+            const eventEnd = event.end_date ? new Date(event.end_date) : eventStart;
+            eventEnd.setHours(23, 59, 59, 999);
+            
+            const isEventToday = today >= eventStart && today <= eventEnd;
+            
+            if (isEventToday) {
+              return (
+                <View style={{ backgroundColor: "white", borderRadius: 12, padding: 16, borderWidth: 1, borderColor: Colors.primary + "33", marginBottom: 12 }}>
+                  <Text style={{ fontSize: 13, color: Colors.mutedForeground, textAlign: "center", marginBottom: 12 }}>
+                    Present your QR code at the event entrance for attendance verification
+                  </Text>
+                  <Pressable
+                    onPress={() => setShowAttendanceQR(true)}
+                    style={({ pressed }) => ({
+                      flexDirection: "row",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      gap: 8,
+                      backgroundColor: "white",
+                      borderWidth: 2,
+                      borderColor: Colors.primary,
+                      borderRadius: 10,
+                      paddingVertical: 12,
+                      opacity: pressed ? 0.8 : 1,
+                    })}
+                  >
+                    <ScanLine size={18} color={Colors.primary} />
+                    <Text style={{ color: Colors.primary, fontSize: 15, fontWeight: "600" }}>
+                      Show Attendance QR
+                    </Text>
+                  </Pressable>
+                </View>
+              );
+            }
+            return null;
+          })()}
+
           <EventRegButton
             event={event}
             isRegistered={isRegistered}
@@ -755,6 +815,28 @@ export default function EventDetailScreen() {
           amount={event.price}
           currency={event.currency}
           onPaymentSuccess={handlePaymentSuccess}
+        />
+      )}
+
+      {/* Attendance QR Modal */}
+      {currentUserId && event && (
+        <AttendanceQRModal
+          visible={showAttendanceQR}
+          onClose={() => setShowAttendanceQR(false)}
+          eventId={event.id}
+          userId={currentUserId}
+          userName={currentUserName}
+          memberId={currentUserMemberId}
+        />
+      )}
+
+      {/* Event Attendees Modal (Admin) */}
+      {event && (
+        <EventAttendeesModal
+          visible={showGuestList}
+          onClose={() => setShowGuestList(false)}
+          eventId={event.id}
+          eventTitle={event.title}
         />
       )}
 

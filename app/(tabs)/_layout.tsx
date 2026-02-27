@@ -84,6 +84,12 @@ export default function TabsLayout() {
           href: null,
         }}
       />
+      <Tabs.Screen
+        name="event/scanner"
+        options={{
+          href: null,
+        }}
+      />
     </Tabs>
   );
 }

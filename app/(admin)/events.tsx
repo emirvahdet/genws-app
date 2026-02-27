@@ -12,7 +12,7 @@ import {
 } from "react-native";
 import { Image } from "expo-image";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useRouter } from "expo-router";
+import { useRouter, useLocalSearchParams } from "expo-router";
 import {
   ArrowLeft,
   Plus,
@@ -107,6 +107,7 @@ const initialForm = {
 
 export default function AdminEventsScreen() {
   const router = useRouter();
+  const { openGuestList } = useLocalSearchParams<{ openGuestList?: string }>();
   const [events, setEvents] = useState<Event[]>([]);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
@@ -123,6 +124,16 @@ export default function AdminEventsScreen() {
     fetchGroups();
     fetchMembers();
   }, []);
+
+  const [guestListEventId, setGuestListEventId] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (openGuestList) {
+      setGuestListEventId(openGuestList as string);
+      // Clear the parameter
+      router.setParams({ openGuestList: undefined });
+    }
+  }, [openGuestList]);
 
   const fetchEvents = async () => {
     try {
@@ -392,7 +403,12 @@ return (
 
                 {/* Actions */}
                 <View style={{ flexDirection: "row", gap: 8 }}>
-                  <EventAttendees eventId={event.id} eventTitle={event.title} />
+                  <EventAttendees 
+                    eventId={event.id} 
+                    eventTitle={event.title}
+                    autoOpen={guestListEventId === event.id}
+                    onClose={() => setGuestListEventId(null)}
+                  />
                   <Pressable
                     onPress={() => openEditModal(event)}
                     style={({ pressed }) => ({ width: 36, height: 36, borderRadius: 10, borderWidth: 1, borderColor: Colors.border, alignItems: "center", justifyContent: "center", opacity: pressed ? 0.6 : 1 })}

@@ -14,7 +14,10 @@ import { ExternalLink } from "lucide-react-native";
 import * as Haptics from "expo-haptics";
 import { supabase } from "../../../lib/supabase";
 import { MobileLayout } from "../../../components/layout/MobileLayout";
-import { Colors } from "../../../constants/Colors"; 
+import { Colors } from "../../../constants/Colors";
+import { cacheData, getCachedData } from "../../../lib/offlineCache";
+import { useNetworkStatus } from "../../../hooks/useNetworkStatus";
+import { OfflineBanner } from "../../../components/ui/OfflineBanner"; 
 
 interface NewsItem {
   id: string;
@@ -37,12 +40,24 @@ const stripHtml = (html: string) =>
 
 export default function NewsScreen() {
   const router = useRouter();
+  const { isConnected, isInternetReachable } = useNetworkStatus();
   const [newsItems, setNewsItems] = useState<NewsItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+  const [isOffline, setIsOffline] = useState(false);
 
   const fetchNews = useCallback(async () => {
     try {
+      if (!isConnected || !isInternetReachable) {
+        const cached = await getCachedData<NewsItem[]>("news_list");
+        if (cached) {
+          setNewsItems(cached);
+          setIsOffline(true);
+        }
+        setLoading(false);
+        return;
+      }
+
       const { data, error } = await supabase
         .from("news")
         .select("*")
@@ -50,12 +65,19 @@ export default function NewsScreen() {
         .order("created_at", { ascending: false });
       if (error) throw error;
       setNewsItems(data || []);
+      await cacheData("news_list", data || []);
+      setIsOffline(false);
     } catch (e) {
       __DEV__ && console.log("Error fetching news:", e);
+      const cached = await getCachedData<NewsItem[]>("news_list");
+      if (cached) {
+        setNewsItems(cached);
+        setIsOffline(true);
+      }
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [isConnected, isInternetReachable]);
 
   useEffect(() => { fetchNews(); }, [fetchNews]);
 
@@ -78,6 +100,7 @@ export default function NewsScreen() {
 
   return (
     <MobileLayout>
+      <OfflineBanner visible={isOffline} />
       <FlatList
         style={{ flex: 1, backgroundColor: Colors.background }}
         contentContainerStyle={{ paddingBottom: 32 }}

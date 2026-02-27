@@ -15,6 +15,9 @@ import { supabase } from "../../lib/supabase";
 import { useViewAs } from "../../stores/ViewAsContext";
 import { MobileLayout } from "../../components/layout/MobileLayout";
 import { Colors } from "../../constants/Colors";
+import { cacheData, getCachedData } from "../../lib/offlineCache";
+import { useNetworkStatus } from "../../hooks/useNetworkStatus";
+import { OfflineBanner } from "../../components/ui/OfflineBanner";
 
 interface Event {
   id: string;
@@ -77,12 +80,14 @@ const getStatusBadge = (event: Event, registrationCount: number): string | null 
 export default function EventsScreen() {
   const router = useRouter();
   const { getEffectiveUserId, isViewingAs } = useViewAs();
+  const { isConnected, isInternetReachable } = useNetworkStatus();
 
   const [events, setEvents] = useState<Event[]>([]);
   const [registrations, setRegistrations] = useState<Registration[]>([]);
   const [registrationCounts, setRegistrationCounts] = useState<Record<string, number>>({});
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+  const [isOffline, setIsOffline] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
   const [pastDisplayCount, setPastDisplayCount] = useState(PAST_PAGE_SIZE);
 
@@ -124,16 +129,34 @@ export default function EventsScreen() {
     } catch {}
   };
 
-  const fetchEvents = async () => {
+  const fetchEvents = useCallback(async () => {
     try {
+      if (!isConnected || !isInternetReachable) {
+        const cached = await getCachedData<Event[]>("events_list");
+        if (cached) {
+          setEvents(cached);
+          setIsOffline(true);
+        }
+        return;
+      }
+
       const { data, error } = await supabase
         .from("events")
         .select("*")
-        .order("start_date", { ascending: false });
+        .order("start_date", { ascending: true });
       if (error) throw error;
       setEvents(data || []);
-    } catch (e) { __DEV__ && console.log(e); }
-  };
+      await cacheData("events_list", data || []);
+      setIsOffline(false);
+    } catch (error) {
+      __DEV__ && console.log("Error fetching events:", error);
+      const cached = await getCachedData<Event[]>("events_list");
+      if (cached) {
+        setEvents(cached);
+        setIsOffline(true);
+      }
+    }
+  }, [isConnected, isInternetReachable]);
 
   const fetchRegistrations = async () => {
     try {
@@ -322,6 +345,7 @@ export default function EventsScreen() {
 
   return (
     <MobileLayout>
+      <OfflineBanner visible={isOffline} />
       <FlatList
         style={{ flex: 1, backgroundColor: Colors.background }}
         contentContainerStyle={{ padding: 16, paddingBottom: 32 }}

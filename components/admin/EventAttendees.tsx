@@ -9,7 +9,8 @@ import {
   ActivityIndicator,
   Alert,
 } from "react-native";
-import { Users, Trash2, Plus, Search, X, Check, UserX } from "lucide-react-native";
+import { Users, Trash2, Plus, Search, X, Check, UserX, ScanLine } from "lucide-react-native";
+import { useRouter } from "expo-router";
 import { supabase } from "../../lib/supabase";
 import { Colors } from "../../constants/Colors";
 
@@ -17,10 +18,17 @@ interface Profile { id: string; full_name: string; }
 interface CancelledProfile { id: string; full_name: string; cancelled_by_name: string | null; cancelled_at: string | null; self_cancelled: boolean; }
 interface PlusOneGuest { id: string; guest_name: string; guest_email: string; user_id: string; }
 
-interface Props { eventId: string; eventTitle: string; }
+interface Props { eventId: string; eventTitle: string; autoOpen?: boolean; onClose?: () => void; }
 
-export function EventAttendees({ eventId, eventTitle }: Props) {
+export function EventAttendees({ eventId, eventTitle, autoOpen, onClose }: Props) {
+  const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);
+
+  useEffect(() => {
+    if (autoOpen) {
+      setIsOpen(true);
+    }
+  }, [autoOpen]);
   const [profiles, setProfiles] = useState<Profile[]>([]);
   const [waitlistProfiles, setWaitlistProfiles] = useState<Profile[]>([]);
   const [cancelledProfiles, setCancelledProfiles] = useState<CancelledProfile[]>([]);
@@ -185,12 +193,22 @@ export function EventAttendees({ eventId, eventTitle }: Props) {
         <Text style={{ fontSize: 12, color: Colors.foreground }}>Guests</Text>
       </Pressable>
 
-      <Modal visible={isOpen} transparent animationType="slide" onRequestClose={() => { setIsOpen(false); setIsAddMode(false); setSearchQuery(""); }}>
+      <Modal visible={isOpen} transparent animationType="slide" onRequestClose={() => { 
+        setIsOpen(false); 
+        setIsAddMode(false); 
+        setSearchQuery(""); 
+        onClose?.();
+      }}>
         <View style={{ flex: 1, backgroundColor: "rgba(0,0,0,0.5)", justifyContent: "flex-end" }}>
           <View style={{ backgroundColor: "white", borderTopLeftRadius: 24, borderTopRightRadius: 24, padding: 20, maxHeight: "85%" }}>
             <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
               <Text style={{ fontSize: 16, fontWeight: "700", color: Colors.foreground }} numberOfLines={1}>Guests - {eventTitle}</Text>
-              <Pressable onPress={() => { setIsOpen(false); setIsAddMode(false); setSearchQuery(""); }}>
+              <Pressable onPress={() => { 
+                setIsOpen(false); 
+                setIsAddMode(false); 
+                setSearchQuery(""); 
+                onClose?.();
+              }}>
                 <X size={20} color={Colors.mutedForeground} />
               </Pressable>
             </View>
@@ -218,6 +236,27 @@ export function EventAttendees({ eventId, eventTitle }: Props) {
                 )}
               </View>
             )}
+
+            {/* Scan QR Code Button */}
+            <Pressable
+              onPress={() => {
+                router.push(`/(tabs)/event/scanner?eventId=${eventId}` as any);
+              }}
+              style={({ pressed }) => ({
+                flexDirection: "row",
+                alignItems: "center",
+                justifyContent: "center",
+                gap: 8,
+                backgroundColor: Colors.primary,
+                borderRadius: 12,
+                paddingVertical: 14,
+                marginBottom: 12,
+                opacity: pressed ? 0.8 : 1,
+              })}
+            >
+              <ScanLine size={18} color="white" />
+              <Text style={{ fontSize: 14, fontWeight: "600", color: "white" }}>Scan QR Code</Text>
+            </Pressable>
 
             <ScrollView showsVerticalScrollIndicator={false} style={{ marginBottom: 12 }}>
               {loading ? (

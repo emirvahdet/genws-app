@@ -22,6 +22,9 @@ import { supabase } from "../../../lib/supabase";
 import { useViewAs } from "../../../stores/ViewAsContext";
 import { CommitmentSection } from "../../../components/profile/CommitmentSection";
 import { Colors } from "../../../constants/Colors";
+import { cacheData, getCachedData } from "../../../lib/offlineCache";
+import { useNetworkStatus } from "../../../hooks/useNetworkStatus";
+import { OfflineBanner } from "../../../components/ui/OfflineBanner";
 
 interface ProfileData {
   full_name: string;
@@ -54,11 +57,13 @@ const getInitials = (name: string) => {
 export default function ProfileScreen() {
   const router = useRouter();
   const { isViewingAs, viewAsUser, getEffectiveUserId } = useViewAs();
+  const { isConnected, isInternetReachable } = useNetworkStatus();
 
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [userId, setUserId] = useState<string | null>(null);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [isOffline, setIsOffline] = useState(false);
   const [formData, setFormData] = useState<ProfileData>({
     full_name: "", email: "", batch_number: null, generation_number: null,
     company: "", city: "", country: "", priorities: [], interests: [], preferred_activities: [],
@@ -76,22 +81,45 @@ export default function ProfileScreen() {
       if (!user) return;
       const effectiveId = getEffectiveUserId(user.id);
       setUserId(effectiveId);
+
+      if (!isConnected || !isInternetReachable) {
+        const cached = await getCachedData<ProfileData>("profile_" + effectiveId);
+        if (cached) {
+          setFormData(cached);
+          setIsOffline(true);
+        }
+        setLoading(false);
+        return;
+      }
+
       const { data, error } = await supabase.from("profiles").select("*").eq("id", effectiveId).single();
       if (error) throw error;
       if (data) {
-        setFormData({
+        const profileData = {
           ...data,
           priorities: data.priorities || [],
           interests: data.interests || [],
           preferred_activities: data.preferred_activities || [],
-        });
+        };
+        setFormData(profileData);
+        await cacheData("profile_" + effectiveId, profileData);
+        setIsOffline(false);
       }
     } catch (e) {
       __DEV__ && console.log("Error fetching profile:", e);
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        const effectiveId = getEffectiveUserId(user.id);
+        const cached = await getCachedData<ProfileData>("profile_" + effectiveId);
+        if (cached) {
+          setFormData(cached);
+          setIsOffline(true);
+        }
+      }
     } finally {
       setLoading(false);
     }
-  }, [getEffectiveUserId]);
+  }, [getEffectiveUserId, isConnected, isInternetReachable]);
 
   const checkAdmin = useCallback(async () => {
     const { data: { user } } = await supabase.auth.getUser();
@@ -209,6 +237,7 @@ export default function ProfileScreen() {
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: Colors.background }} edges={["top"]}>
+      <OfflineBanner visible={isOffline} />
       <ScrollView
         style={{ flex: 1 }}
         contentContainerStyle={{ padding: 16, paddingBottom: 40 }}

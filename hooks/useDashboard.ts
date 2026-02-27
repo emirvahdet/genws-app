@@ -2,6 +2,8 @@ import { useState, useCallback } from "react";
 import { Alert } from "react-native";
 import { supabase } from "../lib/supabase";
 import { useViewAs } from "../stores/ViewAsContext";
+import { cacheData, getCachedData } from "../lib/offlineCache";
+import { useNetworkStatus } from "./useNetworkStatus";
 
 export interface Update {
   id: string;
@@ -35,6 +37,7 @@ export interface LiveNetworkingEvent {
 
 export const useDashboard = () => {
   const { isViewingAs, viewAsUser, getEffectiveUserId } = useViewAs();
+  const { isConnected, isInternetReachable } = useNetworkStatus();
 
   const [userName, setUserName] = useState("");
   const [updates, setUpdates] = useState<Update[]>([]);
@@ -44,6 +47,7 @@ export const useDashboard = () => {
   const [refreshing, setRefreshing] = useState(false);
   const [liveNetworkingEvents, setLiveNetworkingEvents] = useState<LiveNetworkingEvent[]>([]);
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+  const [isOffline, setIsOffline] = useState(false);
 
   const fetchUserProfile = useCallback(async () => {
     try {
@@ -71,6 +75,15 @@ export const useDashboard = () => {
 
   const fetchUpdates = useCallback(async () => {
     try {
+      if (!isConnected || !isInternetReachable) {
+        const cached = await getCachedData<Update[]>("dashboard_updates");
+        if (cached) {
+          setUpdates(cached);
+          setIsOffline(true);
+        }
+        return;
+      }
+
       const { data: updatesData, error: updatesError } = await supabase
         .from("updates")
         .select("*")
@@ -81,23 +94,46 @@ export const useDashboard = () => {
       
       const updatesWithType = (updatesData || []).map((u) => ({ ...u, type: "update" as const }));
       setUpdates(updatesWithType);
+      await cacheData("dashboard_updates", updatesWithType);
+      setIsOffline(false);
     } catch (error: unknown) {
       __DEV__ && console.log("Error fetching updates:", error);
+      const cached = await getCachedData<Update[]>("dashboard_updates");
+      if (cached) {
+        setUpdates(cached);
+        setIsOffline(true);
+      }
     }
-  }, []);
+  }, [isConnected, isInternetReachable]);
 
   const fetchEvents = useCallback(async () => {
     try {
+      if (!isConnected || !isInternetReachable) {
+        const cached = await getCachedData<DashboardEvent[]>("dashboard_events");
+        if (cached) {
+          setEvents(cached);
+          setIsOffline(true);
+        }
+        return;
+      }
+
       const { data, error } = await supabase
         .from("events")
         .select("*")
         .order("start_date", { ascending: true });
       if (error) throw error;
       setEvents(data || []);
+      await cacheData("dashboard_events", data || []);
+      setIsOffline(false);
     } catch (error: unknown) {
       __DEV__ && console.log("Error fetching events:", error);
+      const cached = await getCachedData<DashboardEvent[]>("dashboard_events");
+      if (cached) {
+        setEvents(cached);
+        setIsOffline(true);
+      }
     }
-  }, []);
+  }, [isConnected, isInternetReachable]);
 
   const fetchRegistrations = useCallback(async () => {
     try {
@@ -212,5 +248,6 @@ export const useDashboard = () => {
     fetchAll,
     onRefresh,
     submitFeedback,
+    isOffline,
   };
 };
