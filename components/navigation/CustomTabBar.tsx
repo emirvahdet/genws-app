@@ -1,6 +1,7 @@
 import { View, Pressable, Image, Text } from "react-native";
 import { BottomTabBarProps } from "@react-navigation/bottom-tabs";
 import { MapPin, Calendar, Newspaper, User } from "lucide-react-native";
+import * as Haptics from "expo-haptics";
 import { Colors } from "../../constants/Colors";
 
 const TAB_COLOR = "#324750";
@@ -23,6 +24,7 @@ export function CustomTabBar({ state, descriptors, navigation }: BottomTabBarPro
             });
 
             if (!isFocused && !event.defaultPrevented) {
+              Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
               navigation.navigate(route.name);
             }
           };

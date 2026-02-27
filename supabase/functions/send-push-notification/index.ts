@@ -120,13 +120,23 @@ serve(async (req) => {
       );
     }
 
+    // Prepare data payload with automatic ID inclusion
+    const notificationData = { ...(data || {}) };
+    
+    // Automatically include relevant IDs for deep linking
+    if (target_type === "event" && target_id) {
+      notificationData.event_id = target_id;
+    } else if (target_type === "group" && target_id) {
+      notificationData.group_id = target_id;
+    }
+    
     // Prepare messages for Expo Push API
     const messages = pushTokens.map((pt) => ({
       to: pt.token,
       sound: "default",
       title,
       body,
-      data: data || {},
+      data: notificationData,
     }));
 
     // Send notifications via Expo Push API

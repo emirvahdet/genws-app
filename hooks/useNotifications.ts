@@ -57,11 +57,16 @@ export function useNotifications(userId?: string) {
   const handleNotificationTap = (data: any) => {
     // Navigate to relevant screen based on notification data
     if (data.event_id) {
-      router.push(`/event/${data.event_id}`);
+      router.push(`/(tabs)/event/${data.event_id}` as any);
     } else if (data.news_id) {
-      router.push(`/news/${data.news_id}`);
+      router.push(`/(tabs)/news/${data.news_id}` as any);
+    } else if (data.member_id) {
+      router.push(`/(tabs)/member/${data.member_id}` as any);
     } else if (data.screen) {
-      router.push(data.screen);
+      router.push(data.screen as any);
+    } else {
+      // Default to dashboard if no specific data
+      router.push("/(tabs)" as any);
     }
   };
 

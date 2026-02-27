@@ -10,6 +10,7 @@ import {
   StyleSheet,
 } from "react-native";
 import { useRouter } from "expo-router";
+import * as Haptics from "expo-haptics";
 import { supabase } from "../../lib/supabase";
 import { useViewAs } from "../../stores/ViewAsContext";
 import { MobileLayout } from "../../components/layout/MobileLayout";
@@ -93,6 +94,7 @@ export default function EventsScreen() {
   useEffect(() => { fetchAll(); }, [fetchAll]);
 
   const onRefresh = async () => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     setRefreshing(true);
     await fetchAll();
     setRefreshing(false);

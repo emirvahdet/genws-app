@@ -11,6 +11,7 @@ import {
 import { Image } from "expo-image";
 import { useRouter } from "expo-router";
 import { ExternalLink } from "lucide-react-native";
+import * as Haptics from "expo-haptics";
 import { supabase } from "../../../lib/supabase";
 import { MobileLayout } from "../../../components/layout/MobileLayout";
 import { Colors } from "../../../constants/Colors"; 
@@ -59,6 +60,7 @@ export default function NewsScreen() {
   useEffect(() => { fetchNews(); }, [fetchNews]);
 
   const onRefresh = async () => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     setRefreshing(true);
     await fetchNews();
     setRefreshing(false);

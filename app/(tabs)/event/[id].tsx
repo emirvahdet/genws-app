@@ -14,6 +14,7 @@ import { Image } from "expo-image";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { LinearGradient } from "expo-linear-gradient";
 import { ArrowLeft, Check } from "lucide-react-native";
+import * as Haptics from "expo-haptics";
 import RenderHtml from "react-native-render-html";
 import { supabase } from "../../../lib/supabase";
 import { Colors } from "../../../constants/Colors";
@@ -243,6 +244,7 @@ export default function EventDetailScreen() {
   }, [id]);
 
   const onRefresh = async () => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     setRefreshing(true);
     await fetchAll();
     setRefreshing(false);
@@ -275,6 +277,7 @@ export default function EventDetailScreen() {
 
   const handleRegister = async () => {
     if (!event) return;
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
     setRegistering(true);
     try {
       const { data: { user } } = await supabase.auth.getUser();
@@ -296,6 +299,7 @@ export default function EventDetailScreen() {
       setIsRegistered(true);
       setIsWaitingList(shouldBeWaitlist);
       await fetchRegistrationCount();
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
       if (event.status.includes("Cost Bearing Event") && !event.price_charged_via_app) {
         Alert.alert(
           "Thanks for registering!",

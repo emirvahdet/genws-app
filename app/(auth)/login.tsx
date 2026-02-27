@@ -13,6 +13,7 @@ import {
 import { useRouter } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Lock, Key, ArrowRight, Fingerprint } from "lucide-react-native";
+import * as Haptics from "expo-haptics";
 import { useAuth } from "../../hooks/useAuth";
 import { useBiometrics } from "../../hooks/useBiometrics";
 import { Colors } from "../../constants/Colors";
@@ -75,15 +76,19 @@ export default function LoginScreen() {
       return;
     }
 
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
     setIsLoading(true);
     try {
       const result = await signIn(identifier.trim(), password);
 
       if (!result.success) {
+        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
         Alert.alert("Invalid Credentials", result.error || "Invalid batch number or key");
         return;
       }
 
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+      
       // Prompt for biometric setup after successful login
       if (!result.mustResetPassword) {
         await promptBiometricSetup(identifier.trim(), password);
@@ -100,18 +105,21 @@ export default function LoginScreen() {
   };
 
   const handleBiometricLogin = async () => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
     setIsBiometricLoading(true);
     try {
       const result = await authenticateWithBiometrics();
 
       if (!result.success) {
         if (result.error !== 'Authentication failed') {
+          Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
           Alert.alert('Error', result.error || 'Biometric authentication failed');
         }
         return;
       }
 
       if (!result.credentials) {
+        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
         Alert.alert('Error', 'No saved credentials found');
         return;
       }
@@ -119,6 +127,7 @@ export default function LoginScreen() {
       const signInResult = await signIn(result.credentials.identifier, result.credentials.password);
 
       if (!signInResult.success) {
+        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
         Alert.alert(
           'Login Failed',
           'Your saved credentials are invalid. Please login with your batch number and key.',
@@ -136,6 +145,8 @@ export default function LoginScreen() {
         return;
       }
 
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+      
       if (signInResult.mustResetPassword) {
         router.replace("/(auth)/password-reset");
       } else {

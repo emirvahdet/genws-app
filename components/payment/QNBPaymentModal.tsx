@@ -20,6 +20,7 @@ import {
   Check,
   X,
 } from "lucide-react-native";
+import * as Haptics from "expo-haptics";
 import { supabase } from "../../lib/supabase";
 import { Colors } from "../../constants/Colors";
 import { CountryPicker } from "../ui/CountryPicker";
@@ -203,6 +204,7 @@ export const QNBPaymentModal = ({
       return;
     }
 
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
     setLoading(true);
 
     try {
@@ -242,6 +244,7 @@ export const QNBPaymentModal = ({
       setStep("3dsecure");
     } catch (error: any) {
       __DEV__ && console.log("Payment error:", error);
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
       Alert.alert(
         "Payment Failed",
         error.message || "Failed to process payment"
@@ -256,12 +259,14 @@ export const QNBPaymentModal = ({
         const data = JSON.parse(event.nativeEvent.data);
         if (data?.type === "qnb-payment-result") {
           if (data.status === "success") {
+            Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
             setStep("processing");
             setTimeout(() => {
               onPaymentSuccess();
               onClose();
             }, 1500);
           } else {
+            Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
             setStep("form");
             Alert.alert(
               "Payment Failed",

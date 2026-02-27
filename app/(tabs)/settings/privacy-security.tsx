@@ -11,6 +11,7 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
 import { ArrowLeft, Shield, MapPin, Eye, EyeOff, Fingerprint } from "lucide-react-native";
+import * as Haptics from "expo-haptics";
 import { supabase } from "../../../lib/supabase";
 import { useBiometrics } from "../../../hooks/useBiometrics";
 import { Colors } from "../../../constants/Colors";
@@ -70,6 +71,7 @@ export default function PrivacySecurityScreen() {
   };
 
   const handleBiometricToggle = async (value: boolean) => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     if (value) {
       // Enabling biometric login - need to authenticate and save credentials
       Alert.alert(

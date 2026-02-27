@@ -1,7 +1,8 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { View, Text, TextInput, ScrollView, Pressable, ActivityIndicator, Alert, Modal, Switch } from "react-native";
 import { useRouter } from "expo-router";
-import { ArrowLeft, Bell, Send, Users, Calendar, CheckCircle, Plus, Edit, Trash2, Zap, Clock, Newspaper, AlertCircle } from "lucide-react-native";
+import { ArrowLeft, Bell, Send, Users, Calendar, CheckCircle, Plus, Edit, Trash2, Zap, Clock, Newspaper, AlertCircle, ChevronDown } from "lucide-react-native";
+import * as Haptics from "expo-haptics";
 import { Colors } from "../../constants/Colors";
 import { supabase } from "../../lib/supabase";
 import { format } from "date-fns";
@@ -188,6 +189,7 @@ export default function NotificationsScreen() {
       return;
     }
 
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
     setSending(true);
     try {
       const { data, error } = await supabase.functions.invoke("send-push-notification", {
@@ -199,6 +201,7 @@ export default function NotificationsScreen() {
         },
       });
       if (error) throw error;
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
       Alert.alert("Success", `Notification sent to ${data.recipient_count} recipients`);
       setTitle("");
       setBody("");
@@ -335,6 +338,7 @@ export default function NotificationsScreen() {
   };
 
   const handleToggleRule = async (rule: NotificationRule) => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     try {
       const { error } = await supabase.from("notification_rules").update({ is_active: !rule.is_active }).eq("id", rule.id);
       if (error) throw error;
@@ -661,8 +665,8 @@ export default function NotificationsScreen() {
                     onPress={() => setRuleForm((p) => ({ ...p, trigger_type: trigger.value as any }))}
                     style={{ flexDirection: "row", alignItems: "center", gap: 12, backgroundColor: "white", borderWidth: 1, borderColor: isSelected ? Colors.primary : Colors.border, borderRadius: 10, padding: 12 }}
                   >
-                    <View style={{ width: 32, height: 32, borderRadius: 8, backgroundColor: isSelected ? Colors.primary + "1A" : Colors.muted, alignItems: "center", justifyContent: "center" }}>
-                      <Icon size={16} color={isSelected ? Colors.primary : Colors.mutedForeground} />
+                    <View style={{ width: 32, height: 32, borderRadius: 8, backgroundColor: isSelected ? Colors.primary : Colors.muted, alignItems: "center", justifyContent: "center" }}>
+                      <Icon size={16} color={isSelected ? "white" : Colors.mutedForeground} />
                     </View>
                     <Text style={{ fontSize: 14, color: Colors.foreground, fontWeight: isSelected ? "600" : "400" }}>{trigger.label}</Text>
                     {isSelected && <CheckCircle size={18} color={Colors.primary} style={{ marginLeft: "auto" }} />}
@@ -747,8 +751,8 @@ export default function NotificationsScreen() {
             <Text style={{ fontSize: 11, fontWeight: "500", color: Colors.mutedForeground, marginBottom: 6 }}>Insert Variable (into {activeTemplateField})</Text>
             <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 6 }}>
               {availableVariables.map((v) => (
-                <Pressable key={v.key} onPress={() => insertVariable(v.key)} style={({ pressed }) => ({ backgroundColor: Colors.primary + "1A", borderRadius: 6, paddingHorizontal: 10, paddingVertical: 6, opacity: pressed ? 0.7 : 1 })}>
-                  <Text style={{ fontSize: 12, color: Colors.primary, fontWeight: "500" }}>{v.label}</Text>
+                <Pressable key={v.key} onPress={() => insertVariable(v.key)} style={({ pressed }) => ({ backgroundColor: Colors.primary, borderRadius: 6, paddingHorizontal: 10, paddingVertical: 6, opacity: pressed ? 0.7 : 1 })}>
+                  <Text style={{ fontSize: 12, color: "white", fontWeight: "600" }}>{v.label}</Text>
                 </Pressable>
               ))}
             </View>
@@ -789,7 +793,7 @@ export default function NotificationsScreen() {
       {/* Header */}
       <View style={{ backgroundColor: "white", borderBottomWidth: 1, borderBottomColor: Colors.border, paddingHorizontal: 16, paddingTop: 60, paddingBottom: 0 }}>
         <View style={{ flexDirection: "row", alignItems: "center", gap: 12, marginBottom: 16 }}>
-          <Pressable onPress={() => router.back()} style={{ padding: 4 }}>
+          <Pressable onPress={() => router.replace("/(tabs)/profile" as any)} style={{ padding: 4 }}>
             <ArrowLeft size={24} color={Colors.foreground} />
           </Pressable>
           <Text style={{ fontSize: 22, fontWeight: "700", color: Colors.foreground }}>Push Notifications</Text>
