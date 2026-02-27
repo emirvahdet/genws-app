@@ -351,10 +351,10 @@ export default function AdminNewsScreen() {
                       flex: 1, paddingVertical: 8, borderRadius: 10, alignItems: "center",
                       borderWidth: 1,
                       borderColor: formData.content_type === type ? Colors.primary : Colors.border,
-                      backgroundColor: formData.content_type === type ? Colors.primary + "1A" : "white",
+                      backgroundColor: formData.content_type === type ? Colors.primary : "white",
                     }}
                   >
-                    <Text style={{ fontSize: 12, fontWeight: "500", color: formData.content_type === type ? Colors.primary : Colors.mutedForeground, textTransform: "capitalize" }}>{type}</Text>
+                    <Text style={{ fontSize: 12, fontWeight: "500", color: formData.content_type === type ? "white" : Colors.mutedForeground, textTransform: "capitalize" }}>{type}</Text>
                   </Pressable>
                 ))}
               </View>
@@ -371,10 +371,10 @@ export default function AdminNewsScreen() {
                         paddingHorizontal: 12, paddingVertical: 6, borderRadius: 999,
                         borderWidth: 1,
                         borderColor: formData.category === cat ? Colors.primary : Colors.border,
-                        backgroundColor: formData.category === cat ? Colors.primary + "1A" : "white",
+                        backgroundColor: formData.category === cat ? Colors.primary : "white",
                       }}
                     >
-                      <Text style={{ fontSize: 12, color: formData.category === cat ? Colors.primary : Colors.mutedForeground }}>{cat}</Text>
+                      <Text style={{ fontSize: 12, color: formData.category === cat ? "white" : Colors.mutedForeground }}>{cat}</Text>
                     </Pressable>
                   ))}
                   <Pressable

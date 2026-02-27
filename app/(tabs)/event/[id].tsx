@@ -9,11 +9,12 @@ import {
   Modal,
   RefreshControl,
   useWindowDimensions,
+  Share,
 } from "react-native";
 import { Image } from "expo-image";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { LinearGradient } from "expo-linear-gradient";
-import { ArrowLeft, Check } from "lucide-react-native";
+import { ArrowLeft, Check, Share2 } from "lucide-react-native";
 import * as Haptics from "expo-haptics";
 import RenderHtml from "react-native-render-html";
 import { supabase } from "../../../lib/supabase";
@@ -108,6 +109,7 @@ export default function EventDetailScreen() {
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+  const [isAdmin, setIsAdmin] = useState(false);
 
   // Registration state
   const [isRegistered, setIsRegistered] = useState(false);
@@ -209,9 +211,19 @@ export default function EventDetailScreen() {
     } catch {}
   }, []);
 
+  const checkAdmin = useCallback(async () => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+      const { data, error } = await supabase.rpc("is_admin", { user_id: user.id });
+      if (!error && data) setIsAdmin(true);
+    } catch {}
+  }, []);
+
   const fetchAll = useCallback(async () => {
-    await Promise.all([fetchEvent(), fetchRegistration(), fetchRegistrationCount(), checkAttendance(), checkUser()]);
-  }, [fetchEvent, fetchRegistration, fetchRegistrationCount, checkAttendance, checkUser]);
+    await Promise.all([fetchEvent(), fetchRegistration(), fetchRegistrationCount(), checkAttendance(), checkAdmin()]);
+    setLoading(false);
+  }, [fetchEvent, fetchRegistration, fetchRegistrationCount, checkAttendance, checkAdmin]);
 
   useEffect(() => {
     fetchAll().then(() => setLoading(false));
@@ -413,6 +425,23 @@ export default function EventDetailScreen() {
     setIsWaitingList(false);
   };
 
+  const handleShare = async () => {
+    if (!event) return;
+    try {
+      const dateStr = buildDateDisplay();
+      const locationStr = `${event.location}, ${event.city}, ${event.country}`;
+      const descriptionText = stripHtml(event.description);
+      const message = `Check out this event: ${event.title}\n\nDate: ${dateStr}\nLocation: ${locationStr}\n\n${descriptionText.substring(0, 200)}${descriptionText.length > 200 ? '...' : ''}`;
+      
+      await Share.share({
+        title: event.title,
+        message: message,
+      });
+    } catch (error: any) {
+      __DEV__ && console.log('Share error:', error);
+    }
+  };
+
   // ─── Display helpers ──────────────────────────────────────────────────────
   const buildDateDisplay = () => {
     if (!event) return "";
@@ -510,41 +539,66 @@ export default function EventDetailScreen() {
                 height: 160,
               }}
             />
-            <Pressable
-              onPress={() => router.replace("/(tabs)/events" as any)}
-              style={({ pressed }) => ({
-                position: "absolute",
-                top: 16,
-                left: 16,
-                flexDirection: "row",
-                alignItems: "center",
-                gap: 6,
-                backgroundColor: "rgba(0,0,0,0.5)",
-                borderRadius: 8,
-                paddingHorizontal: 10,
-                paddingVertical: 6,
-                opacity: pressed ? 0.7 : 1,
-              })}
-            >
-              <ArrowLeft size={14} color="white" />
-              <Text style={{ fontSize: 12, color: "white", fontWeight: "500" }}>Back to Events</Text>
-            </Pressable>
+            <View style={{ position: "absolute", top: 16, left: 16, right: 16, flexDirection: "row", justifyContent: "space-between" }}>
+              <Pressable
+                onPress={() => router.replace("/(tabs)/events" as any)}
+                style={({ pressed }) => ({
+                  flexDirection: "row",
+                  alignItems: "center",
+                  gap: 6,
+                  backgroundColor: "rgba(0,0,0,0.5)",
+                  borderRadius: 8,
+                  paddingHorizontal: 10,
+                  paddingVertical: 6,
+                  opacity: pressed ? 0.7 : 1,
+                })}
+              >
+                <ArrowLeft size={14} color="white" />
+                <Text style={{ fontSize: 12, color: "white", fontWeight: "500" }}>Back to Events</Text>
+              </Pressable>
+              {isAdmin && (
+                <Pressable
+                  onPress={handleShare}
+                  style={({ pressed }) => ({
+                    backgroundColor: "rgba(0,0,0,0.5)",
+                    borderRadius: 8,
+                    padding: 8,
+                    opacity: pressed ? 0.7 : 1,
+                  })}
+                >
+                  <Share2 size={16} color="white" />
+                </Pressable>
+              )}
+            </View>
           </View>
         ) : (
           <View style={{ padding: 16, paddingBottom: 0 }}>
-            <Pressable
-              onPress={() => router.replace("/(tabs)/events" as any)}
-              style={({ pressed }) => ({
-                flexDirection: "row",
-                alignItems: "center",
-                gap: 6,
-                opacity: pressed ? 0.6 : 1,
-                alignSelf: "flex-start",
-              })}
-            >
-              <ArrowLeft size={16} color={Colors.foreground} />
-              <Text style={{ fontSize: 13, color: Colors.foreground }}>Back to Events</Text>
-            </Pressable>
+            <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
+              <Pressable
+                onPress={() => router.replace("/(tabs)/events" as any)}
+                style={({ pressed }) => ({
+                  flexDirection: "row",
+                  alignItems: "center",
+                  gap: 6,
+                  opacity: pressed ? 0.6 : 1,
+                  alignSelf: "flex-start",
+                })}
+              >
+                <ArrowLeft size={16} color={Colors.foreground} />
+                <Text style={{ fontSize: 13, color: Colors.foreground }}>Back to Events</Text>
+              </Pressable>
+              {isAdmin && (
+                <Pressable
+                  onPress={handleShare}
+                  style={({ pressed }) => ({
+                    padding: 8,
+                    opacity: pressed ? 0.6 : 1,
+                  })}
+                >
+                  <Share2 size={18} color={Colors.foreground} />
+                </Pressable>
+              )}
+            </View>
           </View>
         )}
 

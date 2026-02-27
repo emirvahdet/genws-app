@@ -6,10 +6,11 @@ import {
   Pressable,
   ActivityIndicator,
   Linking,
+  Share,
 } from "react-native";
 import { Image } from "expo-image";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import { ArrowLeft, ExternalLink } from "lucide-react-native";
+import { ArrowLeft, ExternalLink, Share2 } from "lucide-react-native";
 import { supabase } from "../../../lib/supabase";
 import { Colors } from "../../../constants/Colors";
 import { MobileLayout } from "../../../components/layout/MobileLayout";
@@ -38,6 +39,16 @@ export default function NewsDetailScreen() {
   const router = useRouter();
   const [newsItem, setNewsItem] = useState<NewsItem | null>(null);
   const [loading, setLoading] = useState(true);
+  const [isAdmin, setIsAdmin] = useState(false);
+
+  const checkAdmin = useCallback(async () => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+      const { data, error } = await supabase.rpc("is_admin", { user_id: user.id });
+      if (!error && data) setIsAdmin(true);
+    } catch {}
+  }, []);
 
   const fetchNewsItem = useCallback(async () => {
     try {
@@ -58,8 +69,27 @@ export default function NewsDetailScreen() {
   }, [id]);
 
   useEffect(() => {
-    if (id) fetchNewsItem();
-  }, [id, fetchNewsItem]);
+    if (id) {
+      fetchNewsItem();
+      checkAdmin();
+    }
+  }, [id, fetchNewsItem, checkAdmin]);
+
+  const handleShare = async () => {
+    if (!newsItem) return;
+    try {
+      const contentText = stripHtml(newsItem.content);
+      const excerpt = contentText.substring(0, 200) + (contentText.length > 200 ? '...' : '');
+      const message = `${newsItem.title}\n\n${excerpt}`;
+      
+      await Share.share({
+        title: newsItem.title,
+        message: message,
+      });
+    } catch (error: any) {
+      __DEV__ && console.log('Share error:', error);
+    }
+  };
 
   if (loading) {
     return (
@@ -89,13 +119,26 @@ export default function NewsDetailScreen() {
     <MobileLayout>
       {/* Back nav bar */}
       <View style={{ borderBottomWidth: 1, borderBottomColor: Colors.border, paddingHorizontal: 16, paddingVertical: 12 }}>
-        <Pressable
-          onPress={() => router.replace("/(tabs)/news" as any)}
-          style={({ pressed }) => ({ flexDirection: "row", alignItems: "center", gap: 8, opacity: pressed ? 0.6 : 1, alignSelf: "flex-start" })}
-        >
-          <ArrowLeft size={18} color={Colors.foreground} />
-          <Text style={{ fontSize: 14, color: Colors.foreground }}>Back to News</Text>
-        </Pressable>
+        <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
+          <Pressable
+            onPress={() => router.replace("/(tabs)/news" as any)}
+            style={({ pressed }) => ({ flexDirection: "row", alignItems: "center", gap: 8, opacity: pressed ? 0.6 : 1 })}
+          >
+            <ArrowLeft size={18} color={Colors.foreground} />
+            <Text style={{ fontSize: 14, color: Colors.foreground }}>Back to News</Text>
+          </Pressable>
+          {isAdmin && (
+            <Pressable
+              onPress={handleShare}
+              style={({ pressed }) => ({
+                padding: 8,
+                opacity: pressed ? 0.6 : 1,
+              })}
+            >
+              <Share2 size={18} color={Colors.foreground} />
+            </Pressable>
+          )}
+        </View>
       </View>
 
       <ScrollView
